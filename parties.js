@@ -196,47 +196,51 @@ $(document).ready(function() {
 		function graph() {
 			vega.embed("#political", {
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#political").width() * 0.7,
+				"width": $("#political").width() * 0.8,
 				"height": 150,
 				"data": {
 					"values": App.politicalAds
 				},
 				"mark": "bar",
 				"encoding": {
-					"y": {"field": "x", "type": "nominal"},
-					"x": {"field": "y", "type": "quantitative"},
+					"y": {"field": "x", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
+					"x": {"field": "y", "type": "quantitative", "axis": { "domain": false, "title": "" } },
 					"color": {
 					  "field": "x",
 					  "type": "nominal",
-					  "scale": {"range": ["gray","red"]}
+					  "scale": {"range": ["gray","red"]},
+					  "legend": false
 					}
-				}
-			}, {
-				"mode": "vega-lite",
-				"actions": false,
-				"config": {
-					"autosize": { "type": "fit", "resize": true }
-				}
-			}, function(error, result) {
-			});
+				},
+				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 14, "labelColor":"#777" } }
+				}, {
+					"mode": "vega-lite",
+					"actions": false,
+					"config": {
+						"autosize": { "type": "fit", "resize": true }
+					}
+				}, function(error, result) {
+				});
 
 			vega.embed("#parties", {
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#parties").width() * 0.7,
+				"width": $("#parties").width() * 0.8,
 				"height": 150,
 				"data": {
 					"values": App.partyAds
 				},
 				"mark": "bar",
 				"encoding": {
-					"y": {"field": "x", "type": "nominal"},
-					"x": {"field": "y", "type": "quantitative"},
+					"y": {"field": "x", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
+					"x": {"field": "y", "type": "quantitative", "axis": { "domain": false, "title": "" } },
 					"color": {
 					  "field": "x",
 					  "type": "nominal",
-					  "scale": {"range": App.partyColours}
+					  "scale": {"range": App.partyColours},
+					  "legend": false
 					}
-				}
+				},
+				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 14, "labelColor":"#777" } }
 			}, {
 				"mode": "vega-lite",
 				"actions": false,
