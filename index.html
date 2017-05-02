@@ -6,13 +6,17 @@
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
 </head>
-<body>
+<body style='max-width: 1260px;' class='center'>
 	<div class='pa5' id='app'>
 		<h1 class='poppins'>Advertiser classifier</h1>
-
+		<div>
+			<div class='fl w-50' id='political'></div>
+			<div class='fl w-50' id='parties'></div>
+		</div>
+		<div class='cf'></div>
+		<br>
 		<section is='advertiser-table' :parties='parties' :data='advertisersToClassify'>To-do</section>
 		<br>
-		<hr>
 		<section is='advertiser-table' :parties='parties' :data='advertisersClassified' class='o-40'>Categorised</section>
 	</div>
 
@@ -56,6 +60,10 @@
 		</div>
 	</script>
 
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>
 	<script src="vue.min.js"></script>
 	<script src="jquery-3.2.1.min.js"></script>
 	<script src="parties.js"></script>
