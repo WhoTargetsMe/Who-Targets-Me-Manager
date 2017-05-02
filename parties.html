@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Parties</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
+	<link rel="stylesheet" type="text/css" href="master.css">
+</head>
+<body>
+	<div class='pa5' id='app'>
+		<h1 class='poppins'>Advertiser classifier</h1>
+
+		<section is='advertiser-table' :parties='parties' :data='advertisersToClassify'>To-do</section>
+		<br>
+		<hr>
+		<section is='advertiser-table' :parties='parties' :data='advertisersClassified' class='o-40'>Categorised</section>
+	</div>
+
+	<script type="text/x-template" id='advertiser-table'>
+		<div>
+			<h2 class='mb3'><slot></slot> ({{data.length}} advertisers)</h2>
+			<table v-if='data.length > 0' class='w-100'>
+				<thead>
+					<th class='tl'>Advertiser</th>
+					<th class='tl'>Is this advertiser involved in UK political campaigning?</th>
+					<th class='tl'>Advertiser's stance/affiliation?</th>
+				</thead>
+				<tr v-for="advertiser in data" v-bind:value="advertiser">
+					<td class='w-30'>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr4 dib pointer'>
+							<img class='v-mid mr2' style='height: 50px; width: 50px;'  :src="advertiser.profile_photo" />
+							<span class='v-mid dark-blue b'>{{advertiser.advertiser}}</span>
+						</td>
+					</td>
+					<td class='w-40'>
+						<input class='pointer' v-on:change="advertiser.touchedDate = Date.now()" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
+						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Not yet classified</label>
+						&nbsp;&nbsp;&nbsp;
+						<input class='pointer' v-on:change="advertiser.touchedDate = Date.now()" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">
+						<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">No, non-political</label>
+						&nbsp;&nbsp;&nbsp;
+						<input class='pointer' v-on:change="advertiser.touchedDate = Date.now()" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">
+						<label class='pointer' :for="advertiser.advertiser_id+'political'">Yes, political</label>
+					</td>
+					<td>
+						<select v-if="advertiser.political == 'true'" class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
+							<optgroup v-for="group in parties" :label="group.label">
+								<option v-for="affil in group.list" v-bind:value="affil.id">
+									{{ affil.short_name }}
+								</option>
+							</optgroup>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</script>
+
+	<script src="vue.min.js"></script>
+	<script src="jquery-3.2.1.min.js"></script>
+	<script src="parties.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+[
+	{
+		"label": "Political alignments",
+		"list": [
+			{
+				"id": "no-party",
+				"short_name": "Non-partisan",
+				"name": "No party affiliation"
+			},{
+				"id": "left-progressive",
+				"short_name": "Left/Progressive",
+				"name": "Left-wing / Progressive"
+			},{
+				"id": "right-conservative",
+				"short_name": "Right/Traditional",
+				"name": "Right-wing / Traditional"
+			}
+		]
+	},
+	{
+		"label": "Political Parties",
+		"list": [
+			{
+			"id": "alliance",
+			"identifiers": [
+				{
+					"identifier": "Q244927",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Alliance_Party_of_Northern_Ireland_logo.svg",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.allianceparty.org/"
+				}
+			],
+			"short_name": "Alliance",
+			"name": "Alliance Party of Northern Ireland",
+			"srgb": "F6CB2F"
+			},
+			{
+			"id": "conservative",
+			"identifiers": [
+				{
+					"identifier": "Q9626",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.conservatives.com"
+				}
+			],
+			"short_name": "Conservatives",
+			"name": "Conservative and Unionist Party",
+			"srgb": "0087DC"
+			},
+			{
+			"id": "dup",
+			"identifiers": [
+				{
+					"identifier": "Q215519",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.mydup.com/"
+				}
+			],
+			"short_name": "DUP",
+			"name": "Democratic Unionist Party",
+			"srgb": "D46A4C"
+			},
+			{
+			"id": "green",
+			"identifiers": [
+				{
+					"identifier": "Q9669",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "https://www.greenparty.org.uk"
+				}
+			],
+			"short_name": "Greens",
+			"name": "Green Party of England and Wales",
+			"srgb": "6AB023"
+			},
+			{
+			"id": "independent",
+			"identifiers": [
+				{
+					"identifier": "Q327591",
+					"scheme": "wikidata"
+				}
+			],
+			"short_name": "Independent",
+			"name": "Independent"
+			},
+			{
+			"id": "labour",
+			"identifiers": [
+				{
+					"identifier": "Q9630",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/New_Labour_new_Britain.png",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.labour.org.uk"
+				}
+			],
+			"short_name": "Labour",
+			"name": "Labour Party",
+			"srgb": "DC241f"
+			},
+			{
+			"id": "labourco-operative",
+			"identifiers": [
+				{
+					"identifier": "Q6467393",
+					"scheme": "wikidata"
+				}
+			],
+			"short_name": "Labour/Co-operative",
+			"name": "Labour/Co-operative",
+			"srgb": "DC241f"
+			},
+			{
+			"id": "liberal-democrat",
+			"identifiers": [
+				{
+					"identifier": "Q9624",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.libdems.org.uk"
+				}
+			],
+			"short_name": "Lib Dems",
+			"name": "Liberal Democrat Party",
+			"srgb": "FAA61A"
+			},
+			{
+			"id": "plaid-cymru",
+			"identifiers": [
+				{
+					"identifier": "Q10691",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "https://www.plaid.cymru"
+				}
+			],
+			"short_name": "Plaid Cymru",
+			"name": "Plaid Cymru – the Party of Wales",
+			"srgb": "008142"
+			},
+			{
+			"id": "scottish-national-party",
+			"identifiers": [
+				{
+					"identifier": "Q10658",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/2010-09-29_189x189px_Yellow_Box_with_SNP_logo.png",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.snp.org/"
+				}
+			],
+			"short_name": "SNP",
+			"name": "Scottish National Party",
+			"srgb": "FFFF00"
+			},
+			{
+			"id": "sinn-fein",
+			"identifiers": [
+				{
+					"identifier": "Q76382",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Sf_logo.png",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.sinnfein.ie/"
+				}
+			],
+			"short_name": "Sinn Féin",
+			"name": "Sinn Féin",
+			"srgb": "008800"
+			},
+			{
+			"id": "social-democratic-and-labour-party",
+			"identifiers": [
+				{
+					"identifier": "Q175443",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.sdlp.ie"
+				}
+			],
+			"short_name": "SDLP",
+			"name": "Social Democratic and Labour Party",
+			"srgb": "99FF66"
+			},
+			{
+			"id": "ukip",
+			"identifiers": [
+				{
+					"identifier": "Q10647",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Ukipsm.svg",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.ukip.org"
+				}
+			],
+			"short_name": "UKIP",
+			"name": "UK Independence Party",
+			"srgb": "70147A"
+			},
+			{
+			"id": "uup",
+			"identifiers": [
+				{
+					"identifier": "Q841045",
+					"scheme": "wikidata"
+				}
+			],
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.uup.org/"
+				}
+			],
+			"short_name": "UUP",
+			"name": "Ulster Unionist Party",
+			"srgb": "9999FF"
+			}
+		]
+	}
+]
