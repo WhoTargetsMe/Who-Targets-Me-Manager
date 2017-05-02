@@ -21,23 +21,23 @@
 		"label": "Political Parties",
 		"list": [
 			{
-			"id": "alliance",
+			"id": "labour",
 			"identifiers": [
 				{
-					"identifier": "Q244927",
+					"identifier": "Q9630",
 					"scheme": "wikidata"
 				}
 			],
-			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Alliance_Party_of_Northern_Ireland_logo.svg",
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/New_Labour_new_Britain.png",
 			"links": [
 				{
 					"note": "website",
-					"url": "http://www.allianceparty.org/"
+					"url": "http://www.labour.org.uk"
 				}
 			],
-			"short_name": "Alliance",
-			"name": "Alliance Party of Northern Ireland",
-			"srgb": "F6CB2F"
+			"short_name": "Labour",
+			"name": "Labour Party",
+			"srgb": "DC241f"
 			},
 			{
 			"id": "conservative",
@@ -58,22 +58,60 @@
 			"srgb": "0087DC"
 			},
 			{
-			"id": "dup",
+			"id": "liberal-democrat",
 			"identifiers": [
 				{
-					"identifier": "Q215519",
+					"identifier": "Q9624",
 					"scheme": "wikidata"
 				}
 			],
 			"links": [
 				{
 					"note": "website",
-					"url": "http://www.mydup.com/"
+					"url": "http://www.libdems.org.uk"
 				}
 			],
-			"short_name": "DUP",
-			"name": "Democratic Unionist Party",
-			"srgb": "D46A4C"
+			"short_name": "Lib Dems",
+			"name": "Liberal Democrat Party",
+			"srgb": "FAA61A"
+			},
+			{
+			"id": "scottish-national-party",
+			"identifiers": [
+				{
+					"identifier": "Q10658",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/2010-09-29_189x189px_Yellow_Box_with_SNP_logo.png",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.snp.org/"
+				}
+			],
+			"short_name": "SNP",
+			"name": "Scottish National Party",
+			"srgb": "FFFF00"
+			},
+			{
+			"id": "ukip",
+			"identifiers": [
+				{
+					"identifier": "Q10647",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Ukipsm.svg",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.ukip.org"
+				}
+			],
+			"short_name": "UKIP",
+			"name": "UK Independence Party",
+			"srgb": "70147A"
 			},
 			{
 			"id": "green",
@@ -94,66 +132,6 @@
 			"srgb": "6AB023"
 			},
 			{
-			"id": "independent",
-			"identifiers": [
-				{
-					"identifier": "Q327591",
-					"scheme": "wikidata"
-				}
-			],
-			"short_name": "Independent",
-			"name": "Independent"
-			},
-			{
-			"id": "labour",
-			"identifiers": [
-				{
-					"identifier": "Q9630",
-					"scheme": "wikidata"
-				}
-			],
-			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/New_Labour_new_Britain.png",
-			"links": [
-				{
-					"note": "website",
-					"url": "http://www.labour.org.uk"
-				}
-			],
-			"short_name": "Labour",
-			"name": "Labour Party",
-			"srgb": "DC241f"
-			},
-			{
-			"id": "labourco-operative",
-			"identifiers": [
-				{
-					"identifier": "Q6467393",
-					"scheme": "wikidata"
-				}
-			],
-			"short_name": "Labour/Co-operative",
-			"name": "Labour/Co-operative",
-			"srgb": "DC241f"
-			},
-			{
-			"id": "liberal-democrat",
-			"identifiers": [
-				{
-					"identifier": "Q9624",
-					"scheme": "wikidata"
-				}
-			],
-			"links": [
-				{
-					"note": "website",
-					"url": "http://www.libdems.org.uk"
-				}
-			],
-			"short_name": "Lib Dems",
-			"name": "Liberal Democrat Party",
-			"srgb": "FAA61A"
-			},
-			{
 			"id": "plaid-cymru",
 			"identifiers": [
 				{
@@ -172,23 +150,41 @@
 			"srgb": "008142"
 			},
 			{
-			"id": "scottish-national-party",
+			"id": "dup",
 			"identifiers": [
 				{
-					"identifier": "Q10658",
+					"identifier": "Q215519",
 					"scheme": "wikidata"
 				}
 			],
-			"image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/2010-09-29_189x189px_Yellow_Box_with_SNP_logo.png",
 			"links": [
 				{
 					"note": "website",
-					"url": "http://www.snp.org/"
+					"url": "http://www.mydup.com/"
 				}
 			],
-			"short_name": "SNP",
-			"name": "Scottish National Party",
-			"srgb": "FFFF00"
+			"short_name": "DUP",
+			"name": "Democratic Unionist Party",
+			"srgb": "D46A4C"
+			},
+			{
+			"id": "alliance",
+			"identifiers": [
+				{
+					"identifier": "Q244927",
+					"scheme": "wikidata"
+				}
+			],
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Alliance_Party_of_Northern_Ireland_logo.svg",
+			"links": [
+				{
+					"note": "website",
+					"url": "http://www.allianceparty.org/"
+				}
+			],
+			"short_name": "Alliance",
+			"name": "Alliance Party of Northern Ireland",
+			"srgb": "F6CB2F"
 			},
 			{
 			"id": "sinn-fein",
@@ -228,25 +224,6 @@
 			"srgb": "99FF66"
 			},
 			{
-			"id": "ukip",
-			"identifiers": [
-				{
-					"identifier": "Q10647",
-					"scheme": "wikidata"
-				}
-			],
-			"image_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Ukipsm.svg",
-			"links": [
-				{
-					"note": "website",
-					"url": "http://www.ukip.org"
-				}
-			],
-			"short_name": "UKIP",
-			"name": "UK Independence Party",
-			"srgb": "70147A"
-			},
-			{
 			"id": "uup",
 			"identifiers": [
 				{
@@ -263,6 +240,29 @@
 			"short_name": "UUP",
 			"name": "Ulster Unionist Party",
 			"srgb": "9999FF"
+			},
+			{
+			"id": "labourco-operative",
+			"identifiers": [
+				{
+					"identifier": "Q6467393",
+					"scheme": "wikidata"
+				}
+			],
+			"short_name": "Labour/Co-operative",
+			"name": "Labour/Co-operative",
+			"srgb": "DC241f"
+			},
+			{
+			"id": "independent",
+			"identifiers": [
+				{
+					"identifier": "Q327591",
+					"scheme": "wikidata"
+				}
+			],
+			"short_name": "Independent",
+			"name": "Independent"
 			}
 		]
 	}
