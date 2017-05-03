@@ -5,15 +5,13 @@ $(document).ready(function() {
 	/*  Load these all from the server. See individual files for expected format */
 	var parties = [];
 	var advertisers = [];
-	var adverts = [];
 	$.getJSON("datasets/parties.json", (partiesJSON) => { parties = partiesJSON; start(); });
 	$.getJSON("datasets/mock-advertisers.json", (advertisersJSON) => { advertisers = advertisersJSON; start(); });
-	$.getJSON("datasets/mock-adverts.json", (advertsJSON) => { adverts = advertsJSON; start(); });
 
 	function start() {
-		console.log(parties.length, advertisers.length, adverts.length);
+		console.log(parties.length, advertisers.length);
 
-		if(parties.length == 0 || advertisers.length == 0 || adverts.length == 0) return false;
+		if(parties.length == 0 || advertisers.length == 0) return false;
 
 		$("#loading").hide();
 		$("#app").show();
@@ -104,7 +102,7 @@ $(document).ready(function() {
 			data: {
 				advertisers: advertisers, // To be loaded from the DB
 				parties: parties, // To be loaded from the DB
-				adverts: adverts, // To be loaded from the DB
+				adverts: [], // Mock data, needs to load from DB
 				politicians: [],
 				suggestengine: false,
 				suggestionDatasets: [
@@ -114,6 +112,18 @@ $(document).ready(function() {
 			},
 			created: function() {
 				var App = this;
+
+				// Mock advert data
+				App.advertisers.forEach(function(advertiser) {
+					var min = 3;
+					var max = 15;
+					var randomNofAds = Math.floor(Math.random() * (max - min + 1) + min);
+					for(var i=0; i < randomNofAds; i++){
+						App.adverts.push({"advertiser_id": advertiser.advertiser_id});
+					}
+				});
+
+				// Load suggestion engine datasets
 				App.suggestionDatasets.forEach(function(dataset,index) {
 					$.getJSON(dataset.url, function(dataJSON) {
 						console.log("Loaded "+dataset.url);

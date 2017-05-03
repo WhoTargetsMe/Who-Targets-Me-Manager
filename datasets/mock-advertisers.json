@@ -1,10 +1,50 @@
 [
 	{
+		"advertiser_id": "95475020353",
+		"advertiser_vanity": "Breitbart",
+		"advertiser": "Breitbart",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/95475020353/picture?type=square",
+		"political": "true",
+		"affiliation": "right-traditional",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "25749647410",
+		"advertiser_vanity": "labourparty",
+		"advertiser": "The Labour Party",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/6085639091/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "133737666673845",
+		"advertiser_vanity": "nigelfarageofficial",
+		"advertiser": "Nigel Farage",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/6085639091/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "6085639091",
+		"advertiser_vanity": "nickclegg",
+		"advertiser": "Nick Clegg",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/6085639091/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
 		"advertiser_id": "653092548048400",
 		"advertiser_vanity": "DavidCameronOfficial",
 		"advertiser": "David Cameron",
 		"count": 2,
-		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
+		"profile_photo": "http://graph.facebook.com/653092548048400/picture?type=square",
 		"political": "",
 		"affiliation": "",
 		"touchedDate": ""
@@ -14,8 +54,28 @@
 		"advertiser_vanity": "JeremyCorbynMP",
 		"advertiser": "Jeremy Corbyn",
 		"count": 3,
-		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
+		"profile_photo": "http://graph.facebook.com/330250343871/picture?type=square",
 		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "184415805090230",
+		"advertiser_vanity": "",
+		"advertiser": "BrightInfo",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
+		"political": "false",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "6243987495",
+		"advertiser_vanity": "",
+		"advertiser": "Spotify",
+		"count": 3,
+		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
+		"political": "false",
 		"affiliation": "",
 		"touchedDate": ""
 	},
@@ -45,8 +105,8 @@
 		"advertiser": "Stratfor",
 		"count": 1,
 		"profile_photo": "http://graph.facebook.com/144372163428/picture?type=square",
-		"political": "true",
-		"affiliation": "right-traditional",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	}
 ]
