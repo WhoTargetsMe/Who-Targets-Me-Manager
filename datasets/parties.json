@@ -1,6 +1,6 @@
 [
 	{
-		"label": "Political alignments",
+		"label": "Political stances",
 		"list": [
 			{
 				"id": "no-party",
@@ -18,7 +18,7 @@
 		]
 	},
 	{
-		"label": "Political Parties",
+		"label": "Political parties",
 		"list": [
 			{
 			"id": "labour",
