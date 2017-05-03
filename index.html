@@ -7,12 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="master.css">
 </head>
 <body>
-	<div id='app'>
-		<header  style='max-width: 1260px;' class='center ph4 pt5'>
-			<h1 class='poppins'>Advertiser classifier</h1>
-		</header>
+	<header  style='max-width: 1260px;' class='center ph4 pt5'>
+		<h1 class='poppins'>Advertiser classifier</h1>
+	</header>
+	<div id='loading' class='measure center tc' style="width: 400px">
+		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
+	</div>
+	<div id='app' style='display: none;'>
 		<section style='max-width: 1260px;' class='center ph4 pv3 bg-light-gray'>
-			<h3 class='center gray'>Ad statistics</h3>
+			<h3 class='center gray poppins'>Ad statistics</h3>
 			<div>
 				<div class='fl w-50' id='political'></div>
 				<div class='fl w-50' id='parties'></div>
@@ -25,7 +28,7 @@
 
 	<script type="text/x-template" id='advertiser-table'>
 		<div>
-			<h2 class='mb3'><slot></slot> ({{data.length}} advertisers)</h2>
+			<h2 class='mb3 poppins'><slot></slot> ({{data.length}} advertisers)</h2>
 			<table v-if='data.length > 0' class='w-100'>
 				<thead>
 					<th class='tl'>Advertiser</th>
@@ -50,6 +53,12 @@
 						<label class='pointer' :for="advertiser.advertiser_id+'political'">Yes, political</label>
 					</td>
 					<td>
+						<!--
+
+							Add suggestions from all those places, including logos.
+							Quick google + wikipedia links
+
+						-->
 						<select v-if="advertiser.political == 'true'" class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="affil in group.list" v-bind:value="affil.id">

@@ -1,6 +1,24 @@
 $(document).ready(function() {
-	$.getJSON("parties.json", function(partyJSON) {
-		// UI controller
+	$("#loading").show();
+	$("#app").hide();
+
+
+	/*  Load these all from the server. See individual files for expected format */
+	var parties = [];
+	var advertisers = [];
+	var adverts = [];
+	$.getJSON("datasets/parties.json", (partiesJSON) => { parties = partiesJSON; start(); });
+	$.getJSON("datasets/mock-advertisers.json", (advertisersJSON) => { advertisers = advertisersJSON; start(); });
+	$.getJSON("datasets/mock-adverts.json", (advertsJSON) => { adverts = advertsJSON; start(); });
+
+	function start() {
+		if(parties.length == 0 || advertisers.length == 0 || adverts.length == 0) {
+			return console.log(parties.length, advertisers.length, adverts.length);
+		}
+
+		$("#loading").hide();
+		$("#app").show();
+		console.log("All loaded");
 
 		Vue.component('advertiser-table', {
 			template: "#advertiser-table",
@@ -10,93 +28,9 @@ $(document).ready(function() {
 		var App = new Vue({
 			el: '#app',
 			data: {
-				advertisers: [ // To be loaded from the DB
-					{
-						"advertiser_id": "184415805090230",
-						"advertiser": "BrightInfo",
-						"count": 2,
-						"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
-						"political": 'true',
-						"affiliation": 'labour',
-						"touchedDate": ''
-					},
-					{
-						"advertiser_id": "6243987495",
-						"advertiser": "Spotify",
-						"count": 3,
-						"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
-						"political": 'true',
-						"affiliation": 'conservative',
-						"touchedDate": ''
-					},
-					{
-						"advertiser_id": "143021112391265",
-						"advertiser": "Jacobin Magazine",
-						"count": 2,
-						"profile_photo": "http://graph.facebook.com/143021112391265/picture?type=square",
-						"political": 'true',
-						"affiliation": '',
-						"touchedDate": ''
-					},
-					{
-						"advertiser_id": "34329506713",
-						"advertiser": "100% Pure New Zealand",
-						"count": 2,
-						"profile_photo": "http://graph.facebook.com/34329506713/picture?type=square",
-						"political": '',
-						"affiliation": '',
-						"touchedDate": ''
-					},
-					{
-						"advertiser_id": "144372163428",
-						"advertiser": "Stratfor",
-						"count": 1,
-						"profile_photo": "http://graph.facebook.com/144372163428/picture?type=square",
-						"political": '',
-						"affiliation": '',
-						"touchedDate": ''
-					}
-				],
-				parties: partyJSON, // To be loaded from the DB
-				adverts: [ // Load actual advert data, or provide partyAds, partyColours numbers (see below)
-					/* e.g.
-						politicalAds = [{ "x": "political", "y": 26, "_id": 740 }, { "x": "nonpolitical", "y": 7, "_id": 741 } ]
-						partyAds = [ { "x": "green", "y": 6, "color": "6AB023", "_id": 1067 }, { "x": "labour", "y": 12, "color": "DC241f", "_id": 1068 }, { "x": "dup", "y": 8, "color": "D46A4C", "_id": 1069 } ]
-					*/
-					{advertiser_id:34329506713},
-					{advertiser_id:34329506713},
-					{advertiser_id:34329506713},
-					{advertiser_id:34329506713},
-					{advertiser_id:34329506713},
-					{advertiser_id:34329506713},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:143021112391265},
-					{advertiser_id:184415805090230},
-					{advertiser_id:184415805090230},
-					{advertiser_id:184415805090230},
-					{advertiser_id:184415805090230},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:144372163428},
-					{advertiser_id:6243987495},
-					{advertiser_id:6243987495},
-					{advertiser_id:6243987495}
-				]
+				advertisers: advertisers, // To be loaded from the DB
+				parties: parties, // To be loaded from the DB
+				adverts: adverts, // To be loaded from the DB
 			},
 			watch: {
 				'advertisers': {
@@ -189,6 +123,10 @@ $(document).ready(function() {
 			}
 		});
 
+		/* ----
+			Visualisations
+		*/
+
 		graph();
 
 		$( window ).resize(() => graph() );
@@ -250,5 +188,5 @@ $(document).ready(function() {
 			}, function(error, result) {
 			});
 		}
-	});
+	}
 });
