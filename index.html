@@ -53,12 +53,7 @@
 						<label class='pointer' :for="advertiser.advertiser_id+'political'">Yes, political</label>
 					</td>
 					<td>
-						<!--
-
-							Add suggestions from all those places, including logos.
-							Quick google + wikipedia links
-
-						-->
+						<p v-if='suggestEngine'>Likely affiliated to <b>{{suggestParty(advertiser)}}</b></p>
 						<select v-if="advertiser.political == 'true'" class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="affil in group.list" v-bind:value="affil.id">

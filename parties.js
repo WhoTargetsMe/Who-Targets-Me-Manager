@@ -2,7 +2,6 @@ $(document).ready(function() {
 	$("#loading").show();
 	$("#app").hide();
 
-
 	/*  Load these all from the server. See individual files for expected format */
 	var parties = [];
 	var advertisers = [];
@@ -31,6 +30,8 @@ $(document).ready(function() {
 				advertisers: advertisers, // To be loaded from the DB
 				parties: parties, // To be loaded from the DB
 				adverts: adverts, // To be loaded from the DB
+				politicians: [],
+				suggestEngine: false
 			},
 			watch: {
 				'advertisers': {
@@ -120,8 +121,46 @@ $(document).ready(function() {
 				partyColours: function() {
 					return this.partyAds.map((party) => party.color);
 				}
+			},
+			methods: {
+				suggestParty: function(advertiser) {
+					var likelyParties = []
+
+					if(politicians.length > 0) {
+						var politician = this.politicians.filter(function(candidate) {
+							return advertiser.advertiser == candidate.name
+								|| advertiser.advertiser_id == candidate.facebook
+								|| advertiser.advertiser_vanity == candidate.facebook
+						})
+						if(politician.length && politician.length > 0) {
+							politician.forEach(function(entry) {
+								likelyParties.push(entry.party);
+							});
+						}
+					}
+
+					return likelyParties;
+				}
 			}
 		});
+
+		var candidates2015 = [];
+		var everypolitician56 = [];
+		$.getJSON("datasets/candidates-2015.json", function(candidates2015) {
+			console.log("Loaded candidates2015");
+			App.politicians.concat(candidates2015);
+			suggest();
+		});
+		$.getJSON("datasets/everypolitician-term-56-reduced.json", function(everypolitician56) {
+			console.log("Loaded everypolitician56");
+			App.politicians.concat(everypolitician56);
+			suggest();
+		});
+		function suggest() {
+			if(candidates2015.length > 0 && everypolitician56.length > 0) {
+				App.suggestEngine = true;
+			}
+		}
 
 		/* ----
 			Visualisations

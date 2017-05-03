@@ -1,7 +1,8 @@
 [
 	{
 		"advertiser_id": "184415805090230",
-		"advertiser": "BrightInfo",
+		"advertiser_vanity": "",
+		"advertiser": "David Cameron",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
 		"political": "true",
@@ -10,6 +11,7 @@
 	},
 	{
 		"advertiser_id": "6243987495",
+		"advertiser_vanity": "",
 		"advertiser": "Spotify",
 		"count": 3,
 		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
@@ -19,6 +21,7 @@
 	},
 	{
 		"advertiser_id": "143021112391265",
+		"advertiser_vanity": "",
 		"advertiser": "Jacobin Magazine",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/143021112391265/picture?type=square",
@@ -28,6 +31,7 @@
 	},
 	{
 		"advertiser_id": "34329506713",
+		"advertiser_vanity": "",
 		"advertiser": "100% Pure New Zealand",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/34329506713/picture?type=square",
@@ -37,6 +41,7 @@
 	},
 	{
 		"advertiser_id": "144372163428",
+		"advertiser_vanity": "",
 		"advertiser": "Stratfor",
 		"count": 1,
 		"profile_photo": "http://graph.facebook.com/144372163428/picture?type=square",
