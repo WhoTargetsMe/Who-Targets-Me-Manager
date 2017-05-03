@@ -108,8 +108,8 @@ $(document).ready(function() {
 				politicians: [],
 				suggestengine: false,
 				suggestionDatasets: [
-					{url:"datasets/candidates-2015.json", data: []},
-					{url:"datasets/everypolitician-term-56-reduced.json", data: []}
+					{url:"datasets/candidates-2015.json?v=03May1927", data: []},
+					{url:"datasets/everypolitician-term-56-reduced.json?v=03May1927", data: []}
 				]
 			},
 			created: function() {
