@@ -5,6 +5,12 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
+	<style>
+	.partysuggest + .partysuggest:before {
+		content: " or ";
+		font-weight: normal !important;
+	}
+	</style>
 </head>
 <body>
 	<header  style='max-width: 1260px;' class='center ph4 pt5'>
@@ -22,13 +28,13 @@
 			</div>
 			<div class='cf'></div>
 		</section>
-		<section style='max-width: 1260px;' class='center ph4 pv3' is='advertiser-table' :parties='parties' :data='advertisersToClassify'>To-do</section>
-		<section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :parties='parties' :data='advertisersClassified'>Categorised</section>
+		<section style='max-width: 1260px;' class='center ph4 pv3' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisersToClassify'>To-do</section>
+		<section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisersClassified'>Categorised</section>
 	</div>
 
 	<script type="text/x-template" id='advertiser-table'>
 		<div>
-			<h2 class='mb3 poppins'><slot></slot> ({{data.length}} advertisers)</h2>
+			<h2 class='mb3 poppins'><slot></slot> ({{data.length}} advertisers) {{suggestengine}}</h2>
 			<table v-if='data.length > 0' class='w-100'>
 				<thead>
 					<th class='tl'>Advertiser</th>
@@ -37,10 +43,13 @@
 				</thead>
 				<tr v-for="advertiser in data" v-bind:value="advertiser">
 					<td class='w-30'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr4 dib pointer'>
-							<img class='v-mid mr2' style='height: 50px; width: 50px;'  :src="advertiser.profile_photo" />
-							<span class='v-mid dark-blue b'>{{advertiser.advertiser}}</span>
-						</td>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr4 pointer'>
+							<img class='dib v-mid' style='height: 50px; width: 50px;'  :src="'http://graph.facebook.com/'+advertiser.advertiser_id+'/picture?type=square'" />
+							<div class='pl2 dib w-70 v-mid'>
+								<div class='dark-blue b'>{{advertiser.advertiser}}</div>
+								<p v-if='suggestParty(advertiser).length > 0' class='f7 ma0 black'>Likely a <span class='partysuggest b' v-for='party in suggestParty(advertiser)'>{{party}}</span> affiliate</p>
+							</div>
+						</a>
 					</td>
 					<td class='w-50'>
 						<input class='pointer' v-on:change="advertiser.touchedDate = Date.now()" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
@@ -53,7 +62,6 @@
 						<label class='pointer' :for="advertiser.advertiser_id+'political'">Yes, political</label>
 					</td>
 					<td>
-						<p v-if='suggestEngine'>Likely affiliated to <b>{{suggestParty(advertiser)}}</b></p>
 						<select v-if="advertiser.political == 'true'" class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="affil in group.list" v-bind:value="affil.id">

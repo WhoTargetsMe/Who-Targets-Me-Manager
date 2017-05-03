@@ -1,22 +1,22 @@
 [
 	{
-		"advertiser_id": "184415805090230",
-		"advertiser_vanity": "",
+		"advertiser_id": "653092548048400",
+		"advertiser_vanity": "DavidCameronOfficial",
 		"advertiser": "David Cameron",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
-		"political": "true",
-		"affiliation": "labour",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{
-		"advertiser_id": "6243987495",
-		"advertiser_vanity": "",
-		"advertiser": "Spotify",
+		"advertiser_id": "330250343871",
+		"advertiser_vanity": "JeremyCorbynMP",
+		"advertiser": "Jeremy Corbyn",
 		"count": 3,
 		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
-		"political": "true",
-		"affiliation": "conservative",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{
@@ -26,7 +26,7 @@
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/143021112391265/picture?type=square",
 		"political": "true",
-		"affiliation": "",
+		"affiliation": "left-progressive",
 		"touchedDate": ""
 	},
 	{
@@ -45,8 +45,8 @@
 		"advertiser": "Stratfor",
 		"count": 1,
 		"profile_photo": "http://graph.facebook.com/144372163428/picture?type=square",
-		"political": "",
-		"affiliation": "",
+		"political": "true",
+		"affiliation": "right-traditional",
 		"touchedDate": ""
 	}
 ]

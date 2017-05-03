@@ -11,9 +11,9 @@ $(document).ready(function() {
 	$.getJSON("datasets/mock-adverts.json", (advertsJSON) => { adverts = advertsJSON; start(); });
 
 	function start() {
-		if(parties.length == 0 || advertisers.length == 0 || adverts.length == 0) {
-			return console.log(parties.length, advertisers.length, adverts.length);
-		}
+		console.log(parties.length, advertisers.length, adverts.length);
+
+		if(parties.length == 0 || advertisers.length == 0 || adverts.length == 0) return false;
 
 		$("#loading").hide();
 		$("#app").show();
@@ -21,8 +21,37 @@ $(document).ready(function() {
 
 		Vue.component('advertiser-table', {
 			template: "#advertiser-table",
-			props: ['data','parties']
-		})
+			props: ['data','parties','politicians', 'suggestengine'],
+			methods: {
+				suggestParty: function(advertiser) {
+					// console.log("Suggesting for "+advertiser.advertiser+", with "+this.politicians.length+" possible matches")
+					var likelyParties = []
+
+					if(this.suggestengine) {
+						var matchedEntities = this.politicians.filter(function(candidate) {
+							return candidate.name == advertiser.advertiser
+								|| (
+									candidate.facebook && candidate.facebook != ""
+									&& (
+										candidate.facebook == advertiser.advertiser_id // Check the IDs we collect against older URLs, before vanity urls were a thing
+										|| candidate.facebook == advertiser.advertiser_vanity // Likely that newer profiles will use a vanity url
+										|| candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
+									)
+								)
+						});
+
+						if(matchedEntities.length && matchedEntities.length > 0) {
+							// console.log("Matches for "+advertiser.advertiser,matchedEntities)
+							matchedEntities.forEach(function(entity) {
+								likelyParties.push(entity.party);
+							});
+						}
+					}
+
+					return likelyParties;
+				}
+			}
+		});
 
 		var App = new Vue({
 			el: '#app',
@@ -31,7 +60,9 @@ $(document).ready(function() {
 				parties: parties, // To be loaded from the DB
 				adverts: adverts, // To be loaded from the DB
 				politicians: [],
-				suggestEngine: false
+				suggestengine: false,
+				candidates2015: [],
+				everypolitician56: []
 			},
 			watch: {
 				'advertisers': {
@@ -40,7 +71,7 @@ $(document).ready(function() {
 						// Sanitise newArray. For any element with political == 'false' or '', clear element affiliation
 						App.advertisers.forEach(function(advertiser,index) {
 							if(advertiser.political == 'false' || advertiser.political == '') {
-								console.log("Clearing affil for "+advertiser.advertiser)
+								// console.log("Clearing affil for "+advertiser.advertiser)
 								App.advertisers[index].affiliation = '';
 							}
 						})
@@ -51,6 +82,15 @@ $(document).ready(function() {
 				}
 			},
 			computed: {
+				politicianDB: function() {
+					if(this.candidates2015.length > 0 && this.everypolitician56.length > 0) {
+						console.log("Suggestion Engine ready!");
+						App.suggestengine = true;
+						return [].concat(this.candidates2015).concat(this.everypolitician56);
+					} else {
+						return [];
+					}
+				},
 				advertisersToClassify: function() {
 					var result = this.advertisers.filter(function (advertiser) {
 						return (
@@ -121,46 +161,23 @@ $(document).ready(function() {
 				partyColours: function() {
 					return this.partyAds.map((party) => party.color);
 				}
-			},
-			methods: {
-				suggestParty: function(advertiser) {
-					var likelyParties = []
-
-					if(politicians.length > 0) {
-						var politician = this.politicians.filter(function(candidate) {
-							return advertiser.advertiser == candidate.name
-								|| advertiser.advertiser_id == candidate.facebook
-								|| advertiser.advertiser_vanity == candidate.facebook
-						})
-						if(politician.length && politician.length > 0) {
-							politician.forEach(function(entry) {
-								likelyParties.push(entry.party);
-							});
-						}
-					}
-
-					return likelyParties;
-				}
 			}
 		});
 
 		var candidates2015 = [];
 		var everypolitician56 = [];
-		$.getJSON("datasets/candidates-2015.json", function(candidates2015) {
+		$.getJSON("datasets/candidates-2015.json", function(candidates2015JSON) {
 			console.log("Loaded candidates2015");
-			App.politicians.concat(candidates2015);
-			suggest();
+			candidates2015 = candidates2015JSON
+			App.candidates2015 = candidates2015
+			App.$forceUpdate();
 		});
-		$.getJSON("datasets/everypolitician-term-56-reduced.json", function(everypolitician56) {
+		$.getJSON("datasets/everypolitician-term-56-reduced.json", function(everypolitician56JSON) {
 			console.log("Loaded everypolitician56");
-			App.politicians.concat(everypolitician56);
-			suggest();
+			everypolitician56 = everypolitician56JSON
+			App.everypolitician56 = everypolitician56;
+			App.$forceUpdate();
 		});
-		function suggest() {
-			if(candidates2015.length > 0 && everypolitician56.length > 0) {
-				App.suggestEngine = true;
-			}
-		}
 
 		/* ----
 			Visualisations
@@ -173,7 +190,7 @@ $(document).ready(function() {
 		function graph() {
 			vega.embed("#political", {
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#political").width() * 0.8,
+				"width": $("#political").width() * 0.7,
 				"height": 150,
 				"data": {
 					"values": App.politicalAds
@@ -201,7 +218,7 @@ $(document).ready(function() {
 
 			vega.embed("#parties", {
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#parties").width() * 0.8,
+				"width": $("#parties").width() * 0.7,
 				"height": 150,
 				"data": {
 					"values": App.partyAds
