@@ -29,7 +29,8 @@
 			<div class='cf'></div>
 		</section>
 		<section style='max-width: 1260px;' class='center ph4 pv3' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisersToClassify'>To-do</section>
-		<section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisersClassified'>Categorised</section>
+		<section style='max-width: 1260px;' class='center ph4 pv3 o-60' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisersClassified'>Categorised</section>
+		<!-- <section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicianDB' :parties='parties' :data='advertisers'>All ads</section> -->
 
 		<a class=''>Save categorisation choices</a>
 	</div>
@@ -42,22 +43,23 @@
 				<thead>
 					<th class='tl' colspan=2>Advertiser</th>
 					<th class='tl'>Involved in UK political campaigning?</th>
-					<th class='tl' colspan=2>Political stance/party</th>
+					<th class='tl'>Suggested</th>
+					<th class='tl'>Select stance/party</th>
 				</thead>
 				<tr v-for="advertiser in data" v-bind:value="advertiser">
 					<td style='width:50px;'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr2 pointer'>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr1 pointer'>
 							<img class='dib v-mid' style='height: 50px; width: 50px;'  :src="'http://graph.facebook.com/'+advertiser.advertiser_id+'/picture?type=square'" />
 						</a>
 					</td>
-					<td class='w-30'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr4 pointer'>
-							<div class='pl2 dib w-70 v-mid'>
+					<td class='w-20'>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='pointer'>
+							<div class='pl2 dib v-mid'>
 								<div class='dark-blue b'>{{advertiser.advertiser}}</div>
 							</div>
 						</a>
 					</td>
-					<td class='w-30'>
+					<td class='w-30 pl2'>
 						<input class='pointer' v-on:change="advertiser.touchedDate = Date.now()" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
 						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Un-classified</label>
 						&nbsp;&nbsp;&nbsp;
@@ -68,20 +70,34 @@
 						<label class='pointer' :for="advertiser.advertiser_id+'political'">Political</label>
 					</td>
 					<td>
-						<p v-if='suggestParty(advertiser).length > 0' class='f7 ma0 black'>Likely a <span class='partysuggest b' v-for='party in suggestParty(advertiser)'>{{party}}</span> affiliate</p>
+						<p v-if='suggestParty(advertiser).length > 0' class='f7 ma0 black'>
+							<party-span v-for='party in suggestParty(advertiser)' :party='party' class='pointer partysuggest' v-on:click.native="advertiser.political = 'true'; advertiser.affiliation = party.id" ></party-span>
+						</p>
 					</td>
 					<td>
-						<select v-if="advertiser.political == 'true'" class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
-							<optgroup v-for="group in parties" :label="group.label">
-								<option v-for="affil in group.list" v-bind:value="affil.id">
-									{{ affil.short_name }}
-								</option>
-							</optgroup>
-						</select>
+						<div v-if="advertiser.political == 'true'" >
+							<div class='lh-title'>
+								<template v-for="party in topparties(5)">
+									<party-span v-on:click.native="advertiser.affiliation = party.id" :party='party' class='pointer'></party-span>
+									&nbsp;
+								</template>
+							</div>
+							<select class='pointer' v-on:change="advertiser.touchedDate = Date.now()" v-model="advertiser.affiliation" :disabled="advertiser.political == 'true' ? false : 'disabled'">
+								<optgroup v-for="group in parties" :label="group.label">
+									<option v-for="affil in group.list" v-bind:value="affil.id">
+										{{ affil.short_name }}
+									</option>
+								</optgroup>
+							</select>
+						</div>
 					</td>
 				</tr>
 			</table>
 		</div>
+	</script>
+
+	<script type="text/x-template" id='party-span' inline-template>
+		<span class='br2 f7 b dib ph1' v-bind:style="{ background: party.srgb ? '#'+party.srgb : gray, color: party.srgb ? invertColor(party.srgb,true) : 'white' }">{{ party.short_name }}</span>
 	</script>
 
 	<script src="https://d3js.org/d3.v3.min.js"></script>
