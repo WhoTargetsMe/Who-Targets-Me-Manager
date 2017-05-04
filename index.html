@@ -64,7 +64,7 @@
 	</style>
 </head>
 <body class='pv5'>
-	<header  style='max-width: 1260px;' class='center ph4'>
+	<header  style='max-width: 1024px;' class='center ph4'>
 		<h1 class='dib poppins'>Advertiser categoriser</h1>&nbsp;&nbsp;&nbsp;&nbsp;
 		<!-- <h1 class='dib poppins'>Advert statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp;
 		<h1 class='dib poppins'>Extension statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp; -->
@@ -74,22 +74,24 @@
 		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
 	</div>
 	<div id='app' style='display: none;'>
-		<section style='max-width: 1260px;' class='center ph4 pv3 bg-light-gray'>
-			<h3 class='center gray poppins'>Ad statistics</h3>
-			<div>
-				<div class='fl w-50' id='political'></div>
-				<div class='fl w-50' id='parties'></div>
+		<section style='max-width: 1040px;' class='center bg-light-gray'>
+			<div style='max-width: 1024px;' class='center ph4 pv3 '>
+				<h3 class='center gray poppins'>Ad statistics</h3>
+				<div>
+					<div class='fl w-50' id='political'></div>
+					<div class='fl w-50' id='parties'></div>
+				</div>
+				<div class='cf'></div>
 			</div>
-			<div class='cf'></div>
 		</section>
-		<advertiser-table style='max-width: 1260px;' class='center ph4 pv3'
+		<advertiser-table style='max-width: 1024px;' class='center ph4 pv3'
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
 			:advertisers='advertisersToClassify'>
 			<span class='dib v-mid'>To-do</span>
 		</advertiser-table>
-		<advertiser-table style='max-width: 1260px;' class='center ph4 pv3'
+		<advertiser-table style='max-width: 1024px;' class='center ph4 pv3'
 			:class='{"o-40": advertisersToClassify.length > 0}'
 			:suggestengine='suggestengine'
 			:politicians='politicians'
@@ -101,7 +103,7 @@
 				<div id='save' v-on:click='save()' class='dib pv1 v-mid dib confirm b'>Really</div>
 			</div>
 		</advertiser-table>
-		<!-- <section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicians' :parties='parties' :advertisers='advertisers'>All ads</section> -->
+		<!-- <section style='max-width: 1024px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicians' :parties='parties' :advertisers='advertisers'>All ads</section> -->
 	</div>
 
 	<script type="text/x-template" id='advertiser-table'>
@@ -113,7 +115,7 @@
 					<th class='tl' colspan=2>Advertiser</th>
 					<th class='tl'>Involved in UK political campaigning?</th>
 					<th class='tl'>Suggested</th>
-					<th class='tl'>Select stance/party</th>
+					<th class='tr'>Select stance/party</th>
 				</thead>
 				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id">
 					<td style='width:50px;'>
@@ -128,7 +130,7 @@
 							</div>
 						</a>
 					</td>
-					<td class='w-30 pl2'>
+					<td class='w-40 pl2'>
 						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
 						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Undecided</label>
 						&nbsp;&nbsp;&nbsp;
@@ -141,9 +143,9 @@
 					<td>
 						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
 					</td>
-					<td v-bind:class="{'o-20': advertiser.political != 'true'}">
+					<td class='tr' v-bind:class="{'o-30': advertiser.political != 'true'}">
 						<div class='lh-title' v-if="advertiser.affiliation == ''">
-							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer' :class='{selected: party.id == advertiser.affiliation}'></party-span>
+							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
 						</div>
 						<select class='br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
 							:class='"party-"+advertiser.affiliation'>
@@ -160,7 +162,7 @@
 	</script>
 
 	<script type="text/x-template" id='party-span' inline-template>
-		<span class='br2 f7 b dib ph1' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,4) }}</span>
+		<span class='br2 f7 b dib ph1' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span>
 	</script>
 
 	<script src="https://d3js.org/d3.v3.min.js"></script>

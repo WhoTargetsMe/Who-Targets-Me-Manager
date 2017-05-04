@@ -19,7 +19,13 @@ $(document).ready(function() {
 
 		Vue.component('party-span', {
 			template: "#party-span",
-			props: ['party']
+			props: {
+				'party': Object,
+			  	'chars': {
+					type: Number,
+			  		default: 20
+				}
+			}
 		});
 
 		Vue.component('advertiser-table', {
