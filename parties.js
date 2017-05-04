@@ -54,20 +54,17 @@ $(document).ready(function() {
 		Vue.component('advertiser-table', {
 			template: "#advertiser-table",
 			props: ['advertisers','parties','politicians', 'suggestengine'],
-			data: () => {
-				touched: null
-			},
 			methods: {
 				topparties: function(x) {
 					return this.parties[1].list.slice(0,x);
 				},
 				suggestParty: function(advertiser) {
-					var App = this;
+					var Component = this;
 					var likelyParties = new Set();
 
-					// console.log("Suggesting for "+advertiser.advertiser+", with "+App.politicians.length+" possible matches")
-					if(App.suggestengine) {
-						var matchedEntities = App.politicians.filter(function(candidate) {
+					// console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
+					if(Component.suggestengine) {
+						var matchedEntities = Component.politicians.filter(function(candidate) {
 							return (
 								candidate.name == advertiser.advertiser
 								|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
@@ -93,7 +90,7 @@ $(document).ready(function() {
 					}
 
 					likelyParties = Array.from(likelyParties)
-					likelyParties = likelyParties.map((id) => App.parties[1].list.find((someParty)=> someParty.id == id) );
+					likelyParties = likelyParties.map((id) => Component.parties[1].list.find((someParty)=> someParty.id == id) );
 					return likelyParties;
 				},
 				invertColor: function(hex, bw) {
@@ -124,7 +121,7 @@ $(document).ready(function() {
 				    return "#" + padZero(r) + padZero(g) + padZero(b);
 				},
 				touch: function(x,prop,$event = null) {
-					var App = this;
+					var Component = this;
 
 					if($event) {
 						console.log("Listening for selection on",$($event.target))
@@ -155,7 +152,7 @@ $(document).ready(function() {
 								}
 							}
 
-							App.$forceUpdate();
+							Component.$forceUpdate();
 						}
 					}
 				}
@@ -287,6 +284,25 @@ $(document).ready(function() {
 				},
 				partyColours: function() {
 					return this.partyAds.map((party) => party.color);
+				}
+			},
+			methods: {
+				save: function() {
+					var Component = this;
+
+					$.ajax({
+						type: 'post',
+						url: "https://who-targets-me-staging.herokuapp.com/advertisers/",
+						dataType: 'json',
+						data: Component.advertisers,
+					    headers: {"Access-Token": "1940d507e36e5034498f24d07d82041208d7d778fabc821cab32b0fc22463edc"}
+					}).done(function(data) {
+						console.log(data.status);
+						console.log("Saved to server",Component.advertisers);
+					}).fail(function(data) {
+						console.log(data.status);
+						console.log("Error saving, try again",Component.advertisers);
+					});
 				}
 			}
 		});

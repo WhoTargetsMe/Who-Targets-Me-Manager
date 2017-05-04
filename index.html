@@ -10,10 +10,54 @@
 		content: " or ";
 		font-weight: normal !important;
 	}
+
+	.confirm {
+		max-width: 0;
+	    transition: max-width 0.15s ease-out;
+	    overflow: hidden;
+		pointer-events: none;
+		background: #EEE;
+	}
+
+	#save-btn {
+		user-select: none;
+	}
+
+	#save-btn:hover .confirm {
+		padding-left: 5px;
+		padding-right: 5px;
+		max-width: 200px;
+	    transition: max-width 0.1s ease-in;
+		pointer-events: all;
+	}
+
+	.confirm:after {
+		content: "?"
+	}
+
+	.confirm:hover {
+		max-width: 200px;
+		pointer-events: all;
+		background: #2ECC40;
+		color: white;
+	}
+
+	.confirm:hover:after {
+		content: "!"
+	}
+
+	.confirm:active {
+		padding-left: 5px;
+		padding-right: 5px;
+		max-width: 200px;
+		pointer-events: all;
+		background: black;
+		color: #01FF70;
+	}
 	</style>
 </head>
-<body>
-	<header  style='max-width: 1260px;' class='center ph4 pt5'>
+<body class='pv5'>
+	<header  style='max-width: 1260px;' class='center ph4'>
 		<h1 class='poppins'>Advertiser classifier</h1>
 	</header>
 	<div id='loading' class='measure center tc' style="width: 400px">
@@ -32,24 +76,29 @@
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
-			:advertisers='advertisersToClassify'>To-do
+			:advertisers='advertisersToClassify'>
+			<span class='dib v-mid'>To-do</span>
 		</advertiser-table>
-		<advertiser-table style='max-width: 1260px;' class='center ph4 pv3 o-60'
+		<advertiser-table style='max-width: 1260px;' class='center ph4 pv3'
+			:class='{"o-60": advertisersToClassify.length > 0}'
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
-			:advertisers='advertisersClassified'>Categorised
+			:advertisers='advertisersClassified'>
+			<span class='dib v-mid'>Categorised</span>
+			<div id='save-btn' class='dib v-mid f5 ba b--gray gray pointer ttl lato'>
+				<div class='dib v-mid ph2 pv1'>Save categorised</div>
+				<div id='save' v-on:click='save()' class='dib pv1 v-mid dib confirm b'>Really</div>
+			</div>
 		</advertiser-table>
 		<!-- <section style='max-width: 1260px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicians' :parties='parties' :advertisers='advertisers'>All ads</section> -->
-
-		<a class=''>Save categorisation choices</a>
 	</div>
 
 	<script type="text/x-template" id='advertiser-table'>
 		<div>
 			<div class='f3 mt3 b poppins'><slot></slot></div>
-			<div class='f4 mb3'>{{advertisers.length}} advertisers</div>
-			<table v-if='advertisers.length > 0' class='w-100 collapse'>
+			<div class='f4'>{{advertisers.length}} advertisers</div>
+			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
 				<thead>
 					<th class='tl' colspan=2>Advertiser</th>
 					<th class='tl'>Involved in UK political campaigning?</th>
