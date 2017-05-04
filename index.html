@@ -25,6 +25,7 @@
 
 	#save-btn {
 		user-select: none;
+		overflow: hidden;
 	}
 
 	#save-btn:hover .confirm {
@@ -92,7 +93,8 @@
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
-			:advertisers='advertisersClassified'>
+			:advertisers='advertisersClassified'
+			:finished=true>
 			<span class='dib v-mid'>Categorised</span>
 			<div id='save-btn' class='br2 dib v-mid f5 ba b--gray gray pointer ttl lato'>
 				<div class='dib v-mid ph2 pv1'>Save categorised</div>
@@ -109,32 +111,38 @@
 			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
 				<thead>
 					<th class='tl' colspan=2>Advertiser</th>
-					<th class='tl w-40 tc'>Involved in UK political campaigning?</th>
+					<th class='tl w-40 tc'>Involvement in UK politics</th>
 					<th class='tl' style='width: 120px;'>Suggested</th>
-					<th class='tr'>Select stance/party</th>
+					<th class='tr'>Political stance/party</th>
 				</thead>
 				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id">
 					<td style='width:50px;'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr1 pointer'>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr1 pointer' target="_blank">
 							<img class='dib v-mid' style='height: 50px; width: 50px;'  :src="'http://graph.facebook.com/'+advertiser.advertiser_id+'/picture?type=square'" />
 						</a>
 					</td>
 					<td class='w-20'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='pointer'>
+						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='pointer' target="_blank">
 							<div class='pl2 dib v-mid'>
 								<div class='dark-blue b'>{{advertiser.advertiser}}</div>
 							</div>
 						</a>
 					</td>
 					<td class='pl2 tc'>
-						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Undecided</label>
+						<span v-if='finished'>
+							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">&nbsp;
+							<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Un-categorise</label>
+							&nbsp;&nbsp;&nbsp;
+						</span>
+						<span>
+							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
+							<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">Neutral</label>
+						</span>
 						&nbsp;&nbsp;&nbsp;
-						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">Neutral</label>
-						&nbsp;&nbsp;&nbsp;
-						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
+						<span>
+							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">&nbsp;
+							<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
+						</span>
 					</td>
 					<td>
 						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>

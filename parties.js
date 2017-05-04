@@ -30,7 +30,15 @@ $(document).ready(function() {
 
 		Vue.component('advertiser-table', {
 			template: "#advertiser-table",
-			props: ['advertisers','parties','politicians', 'suggestengine'],
+			props: {
+				'advertisers': Object,
+				'parties': Object,
+				'politicians': Object,
+				'suggestengine': Object,
+				'finished': {
+					default: false
+				}
+			},
 			methods: {
 				topparties: function(x) {
 					return this.parties[1].list.slice(0,x);
