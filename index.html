@@ -6,16 +6,13 @@
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
 	<style>
-	select {
-	    /*background: none; */
-	    /*font-weight: bold; */
-	    -webkit-appearance:none;
-	    /*padding: 10px;*/
-	}
-
 	.partysuggest + .partysuggest:before {
 		content: " or ";
 		font-weight: normal !important;
+	}
+
+	.flg {
+		flex-grow: 1;
 	}
 
 	.confirm {
@@ -92,7 +89,6 @@
 			<span class='dib v-mid'>To-do</span>
 		</advertiser-table>
 		<advertiser-table style='max-width: 1024px;' class='center ph4 pv3'
-			:class='{"o-40": advertisersToClassify.length > 0}'
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
@@ -113,8 +109,8 @@
 			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
 				<thead>
 					<th class='tl' colspan=2>Advertiser</th>
-					<th class='tl'>Involved in UK political campaigning?</th>
-					<th class='tl'>Suggested</th>
+					<th class='tl w-40 tc'>Involved in UK political campaigning?</th>
+					<th class='tl' style='width: 120px;'>Suggested</th>
 					<th class='tr'>Select stance/party</th>
 				</thead>
 				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id">
@@ -130,7 +126,7 @@
 							</div>
 						</a>
 					</td>
-					<td class='w-40 pl2'>
+					<td class='pl2 tc'>
 						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
 						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Undecided</label>
 						&nbsp;&nbsp;&nbsp;
@@ -144,10 +140,10 @@
 						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
 					</td>
 					<td class='tr' v-bind:class="{'o-30': advertiser.political != 'true'}">
-						<div class='lh-title' v-if="advertiser.affiliation == ''">
-							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
+						<div class='lh-title flex' v-if="advertiser.affiliation == ''">
+							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
 						</div>
-						<select class='br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
+						<select class='w-100 br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
 							:class='"party-"+advertiser.affiliation'>
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
@@ -162,7 +158,7 @@
 	</script>
 
 	<script type="text/x-template" id='party-span' inline-template>
-		<span class='br2 f7 b dib ph1' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span>
+		<span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span>
 	</script>
 
 	<script src="https://d3js.org/d3.v3.min.js"></script>
