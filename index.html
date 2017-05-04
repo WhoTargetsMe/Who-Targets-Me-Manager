@@ -110,10 +110,10 @@
 			<div class='f4'>{{advertisers.length}} advertisers</div>
 			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
 				<thead>
-					<th class='tl' colspan=2>Advertiser</th>
+					<!-- <th class='tl' colspan=2>Advertiser</th>
 					<th class='tl w-40 tc'>Involvement in UK politics</th>
 					<th class='tl' style='width: 120px;'>Suggested</th>
-					<th class='tr'>Political stance/party</th>
+					<th class='tr'>Political stance/party</th> -->
 				</thead>
 				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id">
 					<td style='width:50px;'>
@@ -128,6 +128,9 @@
 							</div>
 						</a>
 					</td>
+					<td>
+						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
+					</td>
 					<td class='pl2 tc'>
 						<span v-if='finished'>
 							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">&nbsp;
@@ -138,27 +141,28 @@
 							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
 							<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">Neutral</label>
 						</span>
-						&nbsp;&nbsp;&nbsp;
+						<!-- &nbsp;&nbsp;&nbsp;
 						<span>
 							<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">&nbsp;
 							<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
-						</span>
+						</span> -->
 					</td>
-					<td>
-						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
-					</td>
-					<td class='tr' v-bind:class="{'o-30': advertiser.political != 'true'}">
-						<div class='lh-title flex' v-if="advertiser.affiliation == ''">
-							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
+					<td class='tr'>
+						<div class='flex'>
+							<div class='v-mid flg'>
+								<div class='flex lh-copy' v-if="advertiser.affiliation == ''">
+									<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
+								</div>
+							</div>
+							<select class='lh-copy v-mid flg br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
+								:class='"party-"+advertiser.affiliation'>
+								<optgroup v-for="group in parties" :label="group.label">
+									<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
+										{{ party.short_name }}
+									</option>
+								</optgroup>
+							</select>
 						</div>
-						<select class='w-100 br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
-							:class='"party-"+advertiser.affiliation'>
-							<optgroup v-for="group in parties" :label="group.label">
-								<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
-									{{ party.short_name }}
-								</option>
-							</optgroup>
-						</select>
 					</td>
 				</tr>
 			</table>
