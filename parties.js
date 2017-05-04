@@ -82,30 +82,35 @@ $(document).ready(function() {
 					var Component = this;
 
 					if($event) {
-						console.log("Listening for selection on",$($event.target))
+						// console.log("Listening for selection on",$($event.target))
 						$($event.target).change(() => {
-							console.log("Clicked dropdown",$event.target);
+							// console.log("Clicked dropdown",$event.target);
 							$($event.target).off('change');
 							touchHappened()
 						});
 					} else touchHappened();
 
 					function touchHappened() {
-						console.log("!!!!! I just clicked ",x.advertiser);
+						// console.log("!!!!! I just clicked ",x.advertiser);
 						x.touchedDate = Date.now();
 						x.touchedProperty = prop;
 
 						if(x) {
-							console.log("Touched "+x.touchedProperty+" on "+x.advertiser);
+							// console.log("Touched "+x.touchedProperty+" on "+x.advertiser);
 							if(x.touchedProperty == 'political') {
-								console.log("Clearing affil for "+x.advertiser)
-								x.affiliation = '';
+								if(x.political == 'true') {
+									// console.log("Nonpartisan "+x.advertiser)
+									x.affiliation = 'no-party';
+								} else {
+									// console.log("Clearing affil for "+x.advertiser)
+									x.affiliation = '';
+								}
 							} else if(x.touchedProperty == 'affiliation') {
 								if(x.affiliation != '') {
-									console.log("Applying political to "+x.advertiser)
+									// console.log("Applying political to "+x.advertiser)
 									x.political = 'true';
 								} else {
-									console.log("Clearing political for "+x.advertiser)
+									// console.log("Clearing political for "+x.advertiser)
 									x.political = 'false';
 								}
 							}
@@ -371,7 +376,7 @@ $(document).ready(function() {
 					"color": {
 					  "field": "x",
 					  "type": "nominal",
-					  "scale": {"range": App.partyColours},
+					//   "scale": {"range": App.partyColours},
 					  "legend": false
 					}
 				},
