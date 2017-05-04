@@ -82,11 +82,11 @@
 					<td>
 						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')"></party-span>
 					</td>
-					<td>
+					<td v-bind:class="{'o-20': advertiser.political != 'true'}">
 						<div class='lh-title'>
 							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer'></party-span>
 						</div>
-						<select class='pointer' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)">
+						<select class='pointer b' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)">
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
 									{{ party.short_name }}
