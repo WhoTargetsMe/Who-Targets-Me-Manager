@@ -80,7 +80,7 @@
 			<span class='dib v-mid'>To-do</span>
 		</advertiser-table>
 		<advertiser-table style='max-width: 1260px;' class='center ph4 pv3'
-			:class='{"o-60": advertisersToClassify.length > 0}'
+			:class='{"o-40": advertisersToClassify.length > 0}'
 			:suggestengine='suggestengine'
 			:politicians='politicians'
 			:parties='parties'
@@ -95,7 +95,7 @@
 	</div>
 
 	<script type="text/x-template" id='advertiser-table'>
-		<div>
+		<div v-if='advertisers.length > 0'>
 			<div class='f3 mt3 b poppins'><slot></slot></div>
 			<div class='f4'>{{advertisers.length}} advertisers</div>
 			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
