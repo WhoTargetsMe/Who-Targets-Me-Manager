@@ -6,6 +6,13 @@
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
 	<style>
+	select {
+	    /*background: none; */
+	    /*font-weight: bold; */
+	    -webkit-appearance:none;
+	    /*padding: 10px;*/
+	}
+
 	.partysuggest + .partysuggest:before {
 		content: " or ";
 		font-weight: normal !important;
@@ -89,7 +96,7 @@
 			:parties='parties'
 			:advertisers='advertisersClassified'>
 			<span class='dib v-mid'>Categorised</span>
-			<div id='save-btn' class='dib v-mid f5 ba b--gray gray pointer ttl lato'>
+			<div id='save-btn' class='br2 dib v-mid f5 ba b--gray gray pointer ttl lato'>
 				<div class='dib v-mid ph2 pv1'>Save categorised</div>
 				<div id='save' v-on:click='save()' class='dib pv1 v-mid dib confirm b'>Really</div>
 			</div>
@@ -132,13 +139,14 @@
 						<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
 					</td>
 					<td>
-						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')"></party-span>
+						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
 					</td>
 					<td v-bind:class="{'o-20': advertiser.political != 'true'}">
-						<div class='lh-title'>
-							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer'></party-span>
+						<div class='lh-title' v-if="advertiser.affiliation == ''">
+							<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer' :class='{selected: party.id == advertiser.affiliation}'></party-span>
 						</div>
-						<select class='pointer b' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)">
+						<select class='br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
+							:class='"party-"+advertiser.affiliation'>
 							<optgroup v-for="group in parties" :label="group.label">
 								<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
 									{{ party.short_name }}
@@ -152,7 +160,7 @@
 	</script>
 
 	<script type="text/x-template" id='party-span' inline-template>
-		<span class='br2 f7 b dib ph1' v-bind:style="{ background: party.srgb ? '#'+party.srgb : gray, color: party.srgb ? invertColor(party.srgb,true) : 'white' }">{{ party.short_name }}</span>
+		<span class='br2 f7 b dib ph1' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,4) }}</span>
 	</script>
 
 	<script src="https://d3js.org/d3.v3.min.js"></script>
