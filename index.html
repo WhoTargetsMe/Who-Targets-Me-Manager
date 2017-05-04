@@ -58,8 +58,11 @@
 </head>
 <body class='pv5'>
 	<header  style='max-width: 1260px;' class='center ph4'>
-		<h1 class='poppins'>Advertiser classifier</h1>
+		<h1 class='dib poppins'>Advertiser categoriser</h1>&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- <h1 class='dib poppins'>Advert statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp;
+		<h1 class='dib poppins'>Extension statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp; -->
 	</header>
+	<div class='cf'></div>
 	<div id='loading' class='measure center tc' style="width: 400px">
 		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
 	</div>
@@ -120,13 +123,13 @@
 					</td>
 					<td class='w-30 pl2'>
 						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Un-classified</label>
+						<label class='pointer' :for="advertiser.advertiser_id+'undecided'">Undecided</label>
 						&nbsp;&nbsp;&nbsp;
 						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">Non-political</label>
+						<label class='pointer' :for="advertiser.advertiser_id+'nonpolitical'">Neutral</label>
 						&nbsp;&nbsp;&nbsp;
 						<input :name="advertiser.advertiser_id+'political'" class='pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">
-						<label class='pointer' :for="advertiser.advertiser_id+'political'">Political</label>
+						<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
 					</td>
 					<td>
 						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')"></party-span>
