@@ -80,10 +80,10 @@
 	</div>
 	<div id='app' style='display: none;'>
 		<section style='max-width: 1180px;' class='center bg-light-gray'>
-			<div style='max-width: 1140px;' class='center ph4 pv3 '>
+			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
 					<div class='fl w-70'>
-						<h3 class='mt1 mb1 center gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</h3>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</div>
 						<h4 class='mt0 gray'>
 							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female" }}s&nbsp;&nbsp;&nbsp;</span>
 						</h4>

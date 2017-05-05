@@ -393,12 +393,12 @@ $(document).ready(function() {
 				.attr('width', $("#constituencies").width())
 				.attr('height', 400);
 
-				var map = UK.ElectionMap(5)
+				var map = UK.ElectionMap(5.2)
 				.fill(function(constituency) {
 					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency);
 					return color_scale(thisConstituency ? thisConstituency.users : 0) || 'white';
 				})
-				.origin({x: 40, y: 380});
+				.origin({x: 60, y: 390});
 
 				map(svg);
 
