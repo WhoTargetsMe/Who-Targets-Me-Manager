@@ -6,6 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
 	<style>
+	path { cursor: pointer; }
 	.partysuggest + .partysuggest:before {
 		content: " or ";
 		font-weight: normal !important;
@@ -73,11 +74,6 @@
 	</style>
 </head>
 <body class='pv5'>
-	<header  style='max-width: 1140px;' class='center ph4'>
-		<h1 class='dib poppins'>Advertiser categoriser</h1>&nbsp;&nbsp;&nbsp;&nbsp;
-		<!-- <h1 class='dib poppins'>Advert statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp;
-		<h1 class='dib poppins'>Extension statistics</h1>&nbsp;&nbsp;&nbsp;&nbsp; -->
-	</header>
 	<div class='cf'></div>
 	<div id='loading' class='measure center tc' style="width: 400px">
 		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
@@ -85,45 +81,63 @@
 	<div id='app' style='display: none;'>
 		<section style='max-width: 1180px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph4 pv3 '>
-				<h3 class='center gray poppins'>Ad statistics</h3>
-				<div>
-					<div class='fl w-50' id='political'></div>
-					<div class='fl w-50' id='parties'></div>
+				<div class='w-100'>
+					<div class='fl w-70'>
+						<h3 class='mt1 mb1 center gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</h3>
+						<h4 class='mt0 gray'>
+							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female" }}s&nbsp;&nbsp;&nbsp;</span>
+						</h4>
+						<div class='z-0 relative' id='age'></div>
+					</div>
+					<div class='mt2 fr w-30 gray'>
+						<div class='tc' v-if='mapGenerated && selectedConstituency'>
+							<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
+							<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
+						</div>
+						<div class='tc' v-if='mapGenerated && !selectedConstituency'>
+							<div class='f5 i'>Click a constituency<br>for user count</div>
+						</div>
+						<div class='z-999 relative' id='constituencies'></div>
+					</div>
 				</div>
 				<div class='cf'></div>
 			</div>
 		</section>
-		<advertiser-table style='max-width: 1140px;' class='center ph4 pv3 todo'
-			:suggestengine='suggestengine'
-			:politicians='politicians'
-			:parties='parties'
-			:advertisers='advertisersToClassify'>
-			<span class='dib v-mid'>To-do</span>
-		</advertiser-table>
-		<advertiser-table style='max-width: 1140px;' class='center ph4 pv3'
-			:suggestengine='suggestengine'
-			:politicians='politicians'
-			:parties='parties'
-			:advertisers='advertisersClassified'
-			:finished=true>
-			<span class='dib v-mid'>Categorised</span>
-			<div id='save-btn' class='br2 dib v-mid f5 ba b--gray gray pointer ttl lato'>
-				<div class='dib v-mid ph2 pv1'>Save categorised</div>
-				<div id='save' v-on:click='save()' class='dib pv1 v-mid dib confirm b'>Really</div>
+		<section style='max-width: 1140px;' class='mt4 center ph3'>
+			<div class='f2 b dib poppins lh-title'>Advertiser categoriser</div>
+			<p class='lh-copy ma0'>Here's a list of advertisers we've recorded. Tell us which party they're politically campaigning for.</p>
+			<advertiser-table class='mt1 center pv3 todo'
+				:suggestengine='suggestengine'
+				:politicians='politicians'
+				:parties='parties'
+				:advertisers='advertisersToClassify'>
+			</advertiser-table>
+
+			<div v-if='advertisersClassified.length > 0' class='mt3'>
+				<div class='f3 b poppins'>Categorised</div>
+				<div id='save-btn' class='mt1 dib br2 f5 ba b--gray gray pointer ttl lato'>
+					<div class='dib v-mid ph2 pv1'>Save {{advertisersClassified.length}} categorised advertisers</div>
+					<div id='save' v-on:click='save(advertisersClassified)' class='dib pv1 v-mid dib confirm b'>Really</div>
+				</div>
 			</div>
-		</advertiser-table>
+			<advertiser-table class='center'
+				:suggestengine='suggestengine'
+				:politicians='politicians'
+				:parties='parties'
+				:advertisers='advertisersClassified'
+				:finished=true>
+			</advertiser-table>
+		</section>
 		<!-- <section style='max-width: 1140px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicians' :parties='parties' :advertisers='advertisers'>All ads</section> -->
 	</div>
 
 	<script type="text/x-template" id='advertiser-table'>
 		<div v-if='advertisers.length > 0'>
-			<div class='f3 mt3 b poppins'><slot></slot></div>
-			<div class='f4'>{{advertisers.length}} advertisers</div>
-			<table v-if='advertisers.length > 0' class='w-100 collapse mt3'>
+			<table v-if='advertisers.length > 0' class='w-100 collapse'>
 				<thead>
 					<th class='tl' colspan=2>Advertiser</th>
 					<th class='tl' style='width: 10px;'>Suggested</th>
-					<th class='tl'>Involvement in UK politics</th>
+					<th class='tl tc'>Involvement in UK politics</th>
 					<th class='tr'>Selected stance/party</th>
 				</thead>
 				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id" class='advertiser-row'>
@@ -202,7 +216,8 @@
 		</span>
 	</script>
 
-	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="uk.electionmap.d3.min.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>

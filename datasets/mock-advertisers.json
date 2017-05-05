@@ -5,8 +5,8 @@
 		"advertiser": "Breitbart",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/95475020353/picture?type=square",
-		"political": "true",
-		"affiliation": "right-traditional",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{
@@ -65,7 +65,7 @@
 		"advertiser": "BrightInfo",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
-		"political": "false",
+		"political": "",
 		"affiliation": "",
 		"touchedDate": ""
 	},
@@ -75,7 +75,7 @@
 		"advertiser": "Spotify",
 		"count": 3,
 		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
-		"political": "false",
+		"political": "",
 		"affiliation": "",
 		"touchedDate": ""
 	},
@@ -85,8 +85,8 @@
 		"advertiser": "Jacobin Magazine",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/143021112391265/picture?type=square",
-		"political": "true",
-		"affiliation": "left-progressive",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{

@@ -1,3 +1,5 @@
+var generatedMap = false;
+
 $(document).ready(function() {
 	$("#loading").show();
 	$("#app").hide();
@@ -141,7 +143,10 @@ $(document).ready(function() {
 				suggestionDatasets: [
 					{url:"datasets/candidates-2015.json?v="+Date.now(), data: []},
 					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []}
-				]
+				],
+				demographics: [],
+				selectedConstituency: null,
+				mapGenerated: false
 			},
 			created: function() {
 				var App = this;
@@ -163,6 +168,20 @@ $(document).ready(function() {
 						App.suggestionDatasets[index].data = dataJSON
 						App.$forceUpdate();
 					});
+				});
+
+				// Load statistics
+				$.getJSON("https://who-targets-me.herokuapp.com/demographics/", function(d) {
+					var ages = new Array(90);
+					d.data.age.map((year) => {
+						ages[year.age] = year
+					});
+					for(var i=13; i < 90; i++){
+					    if(ages[i] == undefined) ages[i] = { age: i, count: 0 }
+					}
+					d.data.age = ages.slice(13,91);
+					App.demographics = d.data;
+					statistics();
 				});
 			},
 			mounted: function() {
@@ -330,50 +349,20 @@ $(document).ready(function() {
 			Visualisations
 		*/
 
-		graph();
+		$( window ).resize(() => statistics() );
 
-		$( window ).resize(() => graph() );
-
-		function graph() {
-			vega.embed("#political", {
+		function statistics() {
+			vega.embed("#age", {
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#political").width() * 0.7,
-				"height": 150,
+				"width": $("#age").width(),
+				"height": 350,
 				"data": {
-					"values": App.politicalAds
+					"values": App.demographics.age
 				},
 				"mark": "bar",
 				"encoding": {
-					"y": {"field": "x", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
-					"x": {"field": "y", "type": "quantitative", "axis": { "domain": false, "title": "" } },
-					"color": {
-					  "field": "x",
-					  "type": "nominal",
-					  "scale": {"range": ["gray","red"]},
-					  "legend": false
-					}
-				},
-				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 14, "labelColor":"#777" } }
-				}, {
-					"mode": "vega-lite",
-					"actions": false,
-					"config": {
-						"autosize": { "type": "fit", "resize": true }
-					}
-				}, function(error, result) {
-				});
-
-			vega.embed("#parties", {
-				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#parties").width() * 0.7,
-				"height": 150,
-				"data": {
-					"values": App.partyAds
-				},
-				"mark": "bar",
-				"encoding": {
-					"y": {"field": "x", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
-					"x": {"field": "y", "type": "quantitative", "axis": { "domain": false, "title": "" } },
+					"x": {"field": "age", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
+					"y": {"field": "count", "type": "quantitative", "axis": { "domain": false, "title": "" } },
 					"color": {
 					  "field": "x",
 					  "type": "nominal",
@@ -381,7 +370,7 @@ $(document).ready(function() {
 					  "legend": false
 					}
 				},
-				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 14, "labelColor":"#777" } }
+				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 11, "labelColor":"#777" } }
 			}, {
 				"mode": "vega-lite",
 				"actions": false,
@@ -390,6 +379,50 @@ $(document).ready(function() {
 				}
 			}, function(error, result) {
 			});
+
+			if(generatedMap == false) {
+				generatedMap = true;
+				var UK_GENERAL_ELECTION_RESULTS_2010 = App.demographics.constituencies
+
+				// Credit to http://bl.ocks.org/timcraft/5866773 for this map
+				var base_color = '#2D4357'
+				var max_downloads = Math.max.apply(Math,UK_GENERAL_ELECTION_RESULTS_2010.map((o) => o.users))
+				var color_scale = d3.scaleLinear().domain([0,max_downloads]).range(['white', base_color])
+
+				var svg = d3.select('#constituencies').append('svg')
+				.attr('width', $("#constituencies").width())
+				.attr('height', 400);
+
+				var map = UK.ElectionMap(5)
+				.fill(function(constituency) {
+					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency);
+					return color_scale(thisConstituency ? thisConstituency.users : 0) || 'white';
+				})
+				.origin({x: 40, y: 380});
+
+				map(svg);
+
+				svg.on('click', function() {
+					more_info = d3.select("#more_info")
+					more_info.classed('hidden', true)
+					d3.select('#more_info_backup').classed('hidden', false)
+					more_info.select("#constituency_name").text("")
+					more_info.select("#download_count").text("")
+				})
+
+				d3.selectAll(".constituency")
+				.append('title')
+				.text(function(constituency) {
+					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]);
+					return constituency[2] + ": " + (thisConstituency ? thisConstituency.users : constituency[2]);
+				})
+				d3.selectAll(".constituency").on('click', function(constituency) {
+					App.selectedConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]) || constituency[2];
+					d3.event.stopPropagation();
+				})
+
+				App.mapGenerated = true;
+			}
 		}
 	}
 });
