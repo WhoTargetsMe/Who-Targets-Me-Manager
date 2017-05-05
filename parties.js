@@ -1,4 +1,3 @@
-var generatedMap = false;
 Vue.config.devtools = true
 
 $(document).ready(function() {
@@ -8,17 +7,62 @@ $(document).ready(function() {
 	/*  Load these all from the server. See individual files for expected format */
 	var parties = [];
 	var advertisers = [];
+	var politicians = [];
+	var demographics = {};
+	var suggestionDatasets = [
+		{url:"datasets/candidates-2015.json?v="+Date.now(), data: []},
+		{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []},
+		{url:"https://docs.google.com/spreadsheets/d/1my9yleXsOhl-m5KYg1lh1sjwrBNLWZKJ1xgCfNnTvCA/edit#gid=0", data: []}
+	];
+
 	$.getJSON("datasets/parties.json?v="+Date.now(), (partiesJSON) => { parties = partiesJSON; start(); });
 	$.getJSON("datasets/mock-advertisers.json?v="+Date.now(), (advertisersJSON) => { advertisers = advertisersJSON; start(); });
+	$.getJSON("https://who-targets-me.herokuapp.com/demographics/", (demographicsJSON) => {
+		var ages = new Array(90);
+		demographicsJSON.data.age.map((year) => ages[year.age] = year );
+		for(var i=13; i < 90; i++) if(ages[i] == undefined) ages[i] = { age: i, count: 0 }
+		demographicsJSON.data.age = ages.slice(13,91);
+		demographics = demographicsJSON.data;
+		start();
+	});
+
+	suggestionDatasets.forEach(function(dataset,index) {
+		if(dataset.url.includes("docs.google.com")) {
+			sheetrock({ url: dataset.url, query: "select A,B,C,D",
+				callback: function(err, opts, dataCSV) {
+					var dataJSON = dataCSV.rows.map((x)=>x.cells);
+					dataJSON.shift()
+					dataJSON.forEach(function(datum,i) {
+						Object.keys(datum).forEach(function(cell,r) {
+							if(!isNaN(parseFloat(cell)) && isFinite(cell)) {
+								dataJSON[i][r] = parseFloat(cell)
+							}
+						})
+					})
+					store(dataJSON);
+				}
+			});
+		} else $.getJSON(dataset.url, store);
+
+		function store(dataJSON) {
+			console.log("Loaded "+dataset.url,dataJSON);
+			suggestionDatasets[index].data = dataJSON
+			if(suggestionDatasets.filter((dataset) => dataset.data.length == 0).length == 0) {
+				console.log("Suggestion Engine ready!");
+				var returnArr = [];
+				suggestionDatasets.forEach((dataset) => returnArr = returnArr.concat(dataset.data))
+				politicians = returnArr
+				start();
+			}
+		}
+	});
 
 	function start() {
-		console.log(parties.length, advertisers.length);
-
-		if(parties.length == 0 || advertisers.length == 0) return false;
+		if(parties.length == 0 || advertisers.length == 0 || demographics.length == 0 || politicians.length == 0) return false;
+		console.log("---- All loaded ----");
 
 		$("#loading").hide();
 		$("#app").show();
-		console.log("All loaded");
 
 		Vue.component('party-span', {
 			template: "#party-span",
@@ -38,7 +82,6 @@ $(document).ready(function() {
 				'advertisers': Object,
 				'parties': Object,
 				'politicians': Object,
-				'suggestengine': Object,
 				'finished': {
 					default: false
 				}
@@ -50,64 +93,60 @@ $(document).ready(function() {
 				suggestParty: function(advertiser) {
 					var Component = this;
 
-					if(Component.suggestengine) {
-						console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
-						var likelyParties = new Set();
+					console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
+					var likelyParties = new Set();
 
-						var matchedEntities = Component.politicians.filter(function(candidate) {
-							return (
-								candidate.name == advertiser.advertiser
-								|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
-								|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
-								|| (
-									candidate.facebook
-									&& candidate.facebook != ""
-									&& (
-										candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
-										|| (
-											advertiser.advertiser_vanity
-											&& advertiser.advertiser_vanity != ""
-											&& (
-												candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
-												|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
-											)
-										)
-									)
+					var matchedEntities = Component.politicians.filter(function(candidate) {
+						return (
+							candidate.name == advertiser.advertiser
+							|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
+							|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
+							|| (
+								candidate.facebook
+								&& candidate.facebook != ""
+								&& (
+									candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
 									|| (
-										candidate.facebook_vanity
-										&& candidate.facebook_vanity != ""
-
-										&&advertiser.advertiser_vanity
+										advertiser.advertiser_vanity
 										&& advertiser.advertiser_vanity != ""
-
 										&& (
-											candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
-											|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
+											candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
 										)
 									)
 								)
+								|| (
+									candidate.facebook_vanity
+									&& candidate.facebook_vanity != ""
+
+									&&advertiser.advertiser_vanity
+									&& advertiser.advertiser_vanity != ""
+
+									&& (
+										candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+										|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
+									)
+								)
 							)
+						)
+					});
+
+					if(matchedEntities.length && matchedEntities.length > 0) {
+						// console.log("Matches for "+advertiser.advertiser,matchedEntities)
+						matchedEntities.forEach(function(entity) {
+							likelyParties.add(entity.party.toLowerCase());
 						});
-
-						if(matchedEntities.length && matchedEntities.length > 0) {
-							// console.log("Matches for "+advertiser.advertiser,matchedEntities)
-							matchedEntities.forEach(function(entity) {
-								likelyParties.add(entity.party.toLowerCase());
-							});
-						}
-
-						likelyParties = Array.from(likelyParties)
-
-						var parties = [];
-						likelyParties.forEach(function(likelyPartyID) {
-							Component.parties[1].list.forEach(function(checkParty) {
-								if(likelyPartyID == checkParty.id) parties.push(checkParty);
-							});
-						})
-						return parties;
-					} else {
-						return [];
 					}
+
+					likelyParties = Array.from(likelyParties)
+
+					var parties = [];
+					likelyParties.forEach(function(likelyPartyID) {
+						Component.parties[1].list.forEach(function(checkParty) {
+							if(likelyPartyID == checkParty.id) parties.push(checkParty);
+						});
+					})
+					return parties;
 				},
 				touch: function(x,prop,$event = null) {
 					var Component = this;
@@ -158,92 +197,16 @@ $(document).ready(function() {
 			data: {
 				advertisers: advertisers, // To be loaded from the DB
 				parties: parties, // To be loaded from the DB
-				adverts: [], // Mock data, needs to load from DB
-				suggestengine: false,
-				suggestionDatasets: [
-					{url:"datasets/candidates-2015.json?v="+Date.now(), data: []},
-					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []},
-					{url:"https://docs.google.com/spreadsheets/d/1my9yleXsOhl-m5KYg1lh1sjwrBNLWZKJ1xgCfNnTvCA/edit#gid=0", data: []}
-				],
-				demographics: [],
+				politicians: politicians,
+				demographics: demographics,
 				selectedConstituency: null,
 				mapGenerated: false
 			},
-			created: function() {
-				var App = this;
-
-				// Mock advert data
-				App.advertisers.forEach(function(advertiser) {
-					var min = 3;
-					var max = 15;
-					var randomNofAds = Math.floor(Math.random() * (max - min + 1) + min);
-					for(var i=0; i < randomNofAds; i++){
-						App.adverts.push({"advertiser_id": advertiser.advertiser_id});
-					}
-				});
-
-				// Load suggestion engine datasets
-				App.suggestionDatasets.forEach(function(dataset,index) {
-					if(dataset.url.includes("docs.google.com")) {
-				        sheetrock({
-				            url: dataset.url, // Published
-				            query: "select A,B,C,D",
-				            callback: function loadedStoryData(err, opts, dataCSV) {
-					            var dataJSON = dataCSV.rows.map((x)=>x.cells);
-					            dataJSON.shift()
-					            dataJSON.forEach(function(datum,i) {
-									Object.keys(datum).forEach(function(cell,r) {
-					                    if(!isNaN(parseFloat(cell)) && isFinite(cell)) {
-					                        dataJSON[i][r] = parseFloat(cell)
-					                    }
-					                })
-					            })
-								store(dataJSON);
-				            }
-				        });
-					} else {
-						$.getJSON(dataset.url, function(dataJSON) {
-							store(dataJSON);
-						});
-					}
-					function store(dataJSON) {
-						console.log("Loaded "+dataset.url,dataJSON);
-						App.suggestionDatasets[index].data = dataJSON
-						App.$forceUpdate();
-					}
-				});
-
-				// Load statistics
-				$.getJSON("https://who-targets-me.herokuapp.com/demographics/", function(d) {
-					var ages = new Array(90);
-					d.data.age.map((year) => {
-						ages[year.age] = year
-					});
-					for(var i=13; i < 90; i++){
-					    if(ages[i] == undefined) ages[i] = { age: i, count: 0 }
-					}
-					d.data.age = ages.slice(13,91);
-					App.demographics = d.data;
-					statistics();
-				});
-			},
 			mounted: function() {
 				this.generatePartyColorClasses();
+				this.statistics();
 			},
 			computed: {
-				politicians: function() {
-					if(this.suggestionDatasets.filter((dataset) => dataset.data.length == 0).length == 0) {
-						console.log("Suggestion Engine ready!");
-						App.suggestengine = true;
-						var returnArr = [];
-						this.suggestionDatasets.forEach(function(dataset) {
-							returnArr = returnArr.concat(dataset.data);
-						})
-						return returnArr;
-					} else {
-						return [];
-					}
-				},
 				advertisersToClassify: function() {
 					var result = this.advertisers.filter(function (advertiser) {
 						return (
@@ -384,88 +347,86 @@ $(document).ready(function() {
 					    var zeros = new Array(len).join('0');
 					    return (zeros + str).slice(-len);
 					}
+				},
+				statistics: function() {
+					/* ----
+						Visualisations
+					*/
+
+					$( window ).resize(() => render() );
+
+					function render() {
+						vega.embed("#age", {
+							"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+							"width": $("#age").width(),
+							"height": 350,
+							"data": {
+								"values": App.demographics.age
+							},
+							"mark": "bar",
+							"encoding": {
+								"x": {"field": "age", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
+								"y": {"field": "count", "type": "quantitative", "axis": { "domain": false, "title": "" } },
+								"color": {
+								  "field": "x",
+								  "type": "nominal",
+								//   "scale": {"range": App.partyColours},
+								  "legend": false
+								}
+							},
+							"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 11, "labelColor":"#777" } }
+						}, {
+							"mode": "vega-lite",
+							"actions": false,
+							"config": {
+								"autosize": { "type": "fit", "resize": true }
+							}
+						}, function(error, result) {
+						});
+
+						var UK_GENERAL_ELECTION_RESULTS_2010 = App.demographics.constituencies
+
+						// Credit to http://bl.ocks.org/timcraft/5866773 for this map
+						var base_color = '#2D4357'
+						var max_downloads = Math.max.apply(Math,UK_GENERAL_ELECTION_RESULTS_2010.map((o) => o.users))
+						var color_scale = d3.scaleLinear().domain([0,max_downloads]).range(['white', base_color])
+
+						var svg = d3.select('#constituencies').append('svg')
+						.attr('width', $("#constituencies").width())
+						.attr('height', 400);
+
+						var map = UK.ElectionMap(5.2)
+						.fill(function(constituency) {
+							var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency);
+							return color_scale(thisConstituency ? thisConstituency.users : 0) || 'white';
+						})
+						.origin({x: 60, y: 390});
+
+						map(svg);
+
+						svg.on('click', function() {
+							more_info = d3.select("#more_info")
+							more_info.classed('hidden', true)
+							d3.select('#more_info_backup').classed('hidden', false)
+							more_info.select("#constituency_name").text("")
+							more_info.select("#download_count").text("")
+						})
+
+						d3.selectAll(".constituency")
+						.append('title')
+						.text(function(constituency) {
+							var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]);
+							return constituency[2] + ": " + (thisConstituency ? thisConstituency.users : constituency[2]);
+						})
+						d3.selectAll(".constituency").on('mouseover', function(constituency) {
+							App.selectedConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]) || constituency[2];
+							d3.event.stopPropagation();
+						})
+
+						App.mapGenerated = true;
+					}
 				}
 			}
 		});
-
-		/* ----
-			Visualisations
-		*/
-
-		$( window ).resize(() => statistics() );
-
-		function statistics() {
-			vega.embed("#age", {
-				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": $("#age").width(),
-				"height": 350,
-				"data": {
-					"values": App.demographics.age
-				},
-				"mark": "bar",
-				"encoding": {
-					"x": {"field": "age", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
-					"y": {"field": "count", "type": "quantitative", "axis": { "domain": false, "title": "" } },
-					"color": {
-					  "field": "x",
-					  "type": "nominal",
-					//   "scale": {"range": App.partyColours},
-					  "legend": false
-					}
-				},
-				"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 11, "labelColor":"#777" } }
-			}, {
-				"mode": "vega-lite",
-				"actions": false,
-				"config": {
-					"autosize": { "type": "fit", "resize": true }
-				}
-			}, function(error, result) {
-			});
-
-			if(generatedMap == false) {
-				generatedMap = true;
-				var UK_GENERAL_ELECTION_RESULTS_2010 = App.demographics.constituencies
-
-				// Credit to http://bl.ocks.org/timcraft/5866773 for this map
-				var base_color = '#2D4357'
-				var max_downloads = Math.max.apply(Math,UK_GENERAL_ELECTION_RESULTS_2010.map((o) => o.users))
-				var color_scale = d3.scaleLinear().domain([0,max_downloads]).range(['white', base_color])
-
-				var svg = d3.select('#constituencies').append('svg')
-				.attr('width', $("#constituencies").width())
-				.attr('height', 400);
-
-				var map = UK.ElectionMap(5.2)
-				.fill(function(constituency) {
-					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency);
-					return color_scale(thisConstituency ? thisConstituency.users : 0) || 'white';
-				})
-				.origin({x: 60, y: 390});
-
-				map(svg);
-
-				svg.on('click', function() {
-					more_info = d3.select("#more_info")
-					more_info.classed('hidden', true)
-					d3.select('#more_info_backup').classed('hidden', false)
-					more_info.select("#constituency_name").text("")
-					more_info.select("#download_count").text("")
-				})
-
-				d3.selectAll(".constituency")
-				.append('title')
-				.text(function(constituency) {
-					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]);
-					return constituency[2] + ": " + (thisConstituency ? thisConstituency.users : constituency[2]);
-				})
-				d3.selectAll(".constituency").on('mouseover', function(constituency) {
-					App.selectedConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]) || constituency[2];
-					d3.event.stopPropagation();
-				})
-
-				App.mapGenerated = true;
-			}
-		}
 	}
 });
