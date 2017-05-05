@@ -1,3 +1,5 @@
+Vue.config.devtools = true
+
 $(document).ready(function() {
 	$("#loading").show();
 	$("#app").hide();
@@ -45,10 +47,11 @@ $(document).ready(function() {
 				},
 				suggestParty: function(advertiser) {
 					var Component = this;
-					var likelyParties = new Set();
 
-					// console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
 					if(Component.suggestengine) {
+						console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
+						var likelyParties = new Set();
+
 						var matchedEntities = Component.politicians.filter(function(candidate) {
 							return (
 								candidate.name == advertiser.advertiser
@@ -87,14 +90,22 @@ $(document).ready(function() {
 						if(matchedEntities.length && matchedEntities.length > 0) {
 							// console.log("Matches for "+advertiser.advertiser,matchedEntities)
 							matchedEntities.forEach(function(entity) {
-								likelyParties.add(entity.party);
+								likelyParties.add(entity.party.toLowerCase());
 							});
 						}
-					}
 
-					likelyParties = Array.from(likelyParties)
-					likelyParties = likelyParties.map((id) => Component.parties[1].list.find((someParty)=> someParty.id == id) );
-					return likelyParties;
+						likelyParties = Array.from(likelyParties)
+
+						var parties = [];
+						likelyParties.forEach(function(likelyPartyID) {
+							Component.parties[1].list.forEach(function(checkParty) {
+								if(likelyPartyID == checkParty.id) parties.push(checkParty);
+							});
+						})
+						return parties;
+					} else {
+						return [];
+					}
 				},
 				touch: function(x,prop,$event = null) {
 					var Component = this;

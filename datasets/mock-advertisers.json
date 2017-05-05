@@ -1,12 +1,52 @@
 [
 	{
+		"advertiser_id": "159284987463836",
+		"advertiser_vanity": "Plaid.Werdd.Ceredigion.Green.Party",
+		"advertiser": "Plaid Werdd Ceredigion Green Party",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/95475020353/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "10642639740",
+		"advertiser_vanity": "",
+		"advertiser": "Alliance Party of Northern Ireland",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/95475020353/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "20995300784",
+		"advertiser_vanity": "thegreenparty",
+		"advertiser": "Green Party of England and Wales",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/6085639091/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
+		"advertiser_id": "5883973269",
+		"advertiser_vanity": "libdems",
+		"advertiser": "Liberal Democrats",
+		"count": 2,
+		"profile_photo": "http://graph.facebook.com/6085639091/picture?type=square",
+		"political": "",
+		"affiliation": "",
+		"touchedDate": ""
+	},
+	{
 		"advertiser_id": "95475020353",
 		"advertiser_vanity": "Breitbart",
 		"advertiser": "Breitbart",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/95475020353/picture?type=square",
-		"political": "true",
-		"affiliation": "right-traditional",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{
@@ -65,7 +105,7 @@
 		"advertiser": "BrightInfo",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/184415805090230/picture?type=square",
-		"political": "false",
+		"political": "",
 		"affiliation": "",
 		"touchedDate": ""
 	},
@@ -75,7 +115,7 @@
 		"advertiser": "Spotify",
 		"count": 3,
 		"profile_photo": "http://graph.facebook.com/6243987495/picture?type=square",
-		"political": "false",
+		"political": "",
 		"affiliation": "",
 		"touchedDate": ""
 	},
@@ -85,8 +125,8 @@
 		"advertiser": "Jacobin Magazine",
 		"count": 2,
 		"profile_photo": "http://graph.facebook.com/143021112391265/picture?type=square",
-		"political": "true",
-		"affiliation": "left-progressive",
+		"political": "",
+		"affiliation": "",
 		"touchedDate": ""
 	},
 	{
