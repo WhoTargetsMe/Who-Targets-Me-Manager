@@ -24,7 +24,8 @@ $(document).ready(function() {
 			  	'chars': {
 					type: Number,
 			  		default: 20
-				}
+				},
+				'advertiser': Object
 			}
 		});
 

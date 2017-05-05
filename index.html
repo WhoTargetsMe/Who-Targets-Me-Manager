@@ -129,7 +129,7 @@
 						</a>
 					</td>
 					<td>
-						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
+						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' :advertiser='advertiser' class='pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
 					</td>
 					<td class='tl'>
 						<span v-if='finished'>
@@ -156,7 +156,7 @@
 						<div class='flex'>
 							<div class='v-mid flg'>
 								<div class='flex lh-copy'>
-									<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :party='party' class='pointer flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
+									<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :key='party.id' :party='party' :advertiser='advertiser' class='pointer flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
 								</div>
 							</div>
 						</div>
@@ -179,7 +179,16 @@
 	</script>
 
 	<script type="text/x-template" id='party-span' inline-template>
-		<span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span>
+		<!-- <span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span> -->
+		<span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id' >
+			<input class='pointer' type="radio"
+				:name="advertiser.advertiser_id+'affiliation'"
+				:id="advertiser.advertiser_id+party.id"
+				v-model="advertiser.affiliation"
+				:value='party.id'
+				@click="touch(advertiser,'affiliation')">
+			<label class='pointer f7 b dib v-mid' :for="advertiser.advertiser_id+party.id">{{ party.short_name.slice(0,chars) }}</label>
+		</span>
 	</script>
 
 	<script src="https://d3js.org/d3.v3.min.js"></script>
