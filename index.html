@@ -106,6 +106,14 @@
 		<section style='max-width: 1140px;' class='mt4 center ph3'>
 			<div class='f2 b dib poppins lh-title'>Advertiser categoriser</div>
 			<p class='lh-copy ma0'>Here's a list of advertisers we've recorded. Tell us which party they're politically campaigning for.</p>
+			<h4>Dev to-do</h4>
+			<ul>
+				<li>Create <code>advertiser</code> table, link to <code>advert</code> table</li>
+				<li>Add <code>GET /advertisers/</code> endpoint, receive <code>advertiser_id,advertiser_vanity,advertiser</code> for <b>50</b> advertisers</li>
+				<li>Add <code>POST /advertisers/:id</code> endpoint, update <code>political (BOOL),affiliation (party id STRING)</code> of an advertiser</li>
+				<li>Simple user/password for access</li>
+				<li>Gameify user categorising (simple leaderboard)</li>
+			</ul>
 			<advertiser-table class='mt1 center pv3 todo'
 				:suggestengine='suggestengine'
 				:politicians='politicians'
