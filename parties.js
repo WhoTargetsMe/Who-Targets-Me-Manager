@@ -54,12 +54,30 @@ $(document).ready(function() {
 								candidate.name == advertiser.advertiser
 								|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
 								|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
-								|| (candidate.facebook && candidate.facebook != ""
-									&& (candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
-										||
-										(	advertiser.advertiser_vanity
+								|| (
+									candidate.facebook
+									&& candidate.facebook != ""
+									&& (
+										candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
+										|| (
+											advertiser.advertiser_vanity
 											&& advertiser.advertiser_vanity != ""
-											&& candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											&& (
+												candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+												|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
+											)
+										)
+									)
+									|| (
+										candidate.facebook_vanity
+										&& candidate.facebook_vanity != ""
+
+										&&advertiser.advertiser_vanity
+										&& advertiser.advertiser_vanity != ""
+
+										&& (
+											candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
 										)
 									)
 								)
@@ -139,7 +157,8 @@ $(document).ready(function() {
 				suggestengine: false,
 				suggestionDatasets: [
 					{url:"datasets/candidates-2015.json?v="+Date.now(), data: []},
-					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []}
+					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []},
+					{url:"https://docs.google.com/spreadsheets/d/1my9yleXsOhl-m5KYg1lh1sjwrBNLWZKJ1xgCfNnTvCA/edit#gid=0", data: []}
 				]
 			},
 			created: function() {
@@ -157,11 +176,33 @@ $(document).ready(function() {
 
 				// Load suggestion engine datasets
 				App.suggestionDatasets.forEach(function(dataset,index) {
-					$.getJSON(dataset.url, function(dataJSON) {
-						console.log("Loaded "+dataset.url);
+					if(dataset.url.includes("docs.google.com")) {
+				        sheetrock({
+				            url: dataset.url, // Published
+				            query: "select A,B,C,D",
+				            callback: function loadedStoryData(err, opts, dataCSV) {
+					            var dataJSON = dataCSV.rows.map((x)=>x.cells);
+					            dataJSON.shift()
+					            dataJSON.forEach(function(datum,i) {
+									Object.keys(datum).forEach(function(cell,r) {
+					                    if(!isNaN(parseFloat(cell)) && isFinite(cell)) {
+					                        dataJSON[i][r] = parseFloat(cell)
+					                    }
+					                })
+					            })
+								store(dataJSON);
+				            }
+				        });
+					} else {
+						$.getJSON(dataset.url, function(dataJSON) {
+							store(dataJSON);
+						});
+					}
+					function store(dataJSON) {
+						console.log("Loaded "+dataset.url,dataJSON);
 						App.suggestionDatasets[index].data = dataJSON
 						App.$forceUpdate();
-					});
+					}
 				});
 			},
 			mounted: function() {
