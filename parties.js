@@ -1,4 +1,5 @@
 var generatedMap = false;
+Vue.config.devtools = true
 
 $(document).ready(function() {
 	$("#loading").show();
@@ -48,21 +49,40 @@ $(document).ready(function() {
 				},
 				suggestParty: function(advertiser) {
 					var Component = this;
-					var likelyParties = new Set();
 
-					// console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
 					if(Component.suggestengine) {
+						console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
+						var likelyParties = new Set();
+
 						var matchedEntities = Component.politicians.filter(function(candidate) {
 							return (
 								candidate.name == advertiser.advertiser
 								|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
 								|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
-								|| (candidate.facebook && candidate.facebook != ""
-									&& (candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
-										||
-										(	advertiser.advertiser_vanity
+								|| (
+									candidate.facebook
+									&& candidate.facebook != ""
+									&& (
+										candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
+										|| (
+											advertiser.advertiser_vanity
 											&& advertiser.advertiser_vanity != ""
-											&& candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											&& (
+												candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+												|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
+											)
+										)
+									)
+									|| (
+										candidate.facebook_vanity
+										&& candidate.facebook_vanity != ""
+
+										&&advertiser.advertiser_vanity
+										&& advertiser.advertiser_vanity != ""
+
+										&& (
+											candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
 										)
 									)
 								)
@@ -72,14 +92,22 @@ $(document).ready(function() {
 						if(matchedEntities.length && matchedEntities.length > 0) {
 							// console.log("Matches for "+advertiser.advertiser,matchedEntities)
 							matchedEntities.forEach(function(entity) {
-								likelyParties.add(entity.party);
+								likelyParties.add(entity.party.toLowerCase());
 							});
 						}
-					}
 
-					likelyParties = Array.from(likelyParties)
-					likelyParties = likelyParties.map((id) => Component.parties[1].list.find((someParty)=> someParty.id == id) );
-					return likelyParties;
+						likelyParties = Array.from(likelyParties)
+
+						var parties = [];
+						likelyParties.forEach(function(likelyPartyID) {
+							Component.parties[1].list.forEach(function(checkParty) {
+								if(likelyPartyID == checkParty.id) parties.push(checkParty);
+							});
+						})
+						return parties;
+					} else {
+						return [];
+					}
 				},
 				touch: function(x,prop,$event = null) {
 					var Component = this;
@@ -122,14 +150,6 @@ $(document).ready(function() {
 						}
 					}
 				}
-			},
-			watch: {
-				'advertisers': {
-					handler: function(newAds, oldAds) {
-						graph();
-					},
-					deep: true
-				}
 			}
 		});
 
@@ -142,7 +162,8 @@ $(document).ready(function() {
 				suggestengine: false,
 				suggestionDatasets: [
 					{url:"datasets/candidates-2015.json?v="+Date.now(), data: []},
-					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []}
+					{url:"datasets/everypolitician-term-56-reduced.json?v="+Date.now(), data: []},
+					{url:"https://docs.google.com/spreadsheets/d/1my9yleXsOhl-m5KYg1lh1sjwrBNLWZKJ1xgCfNnTvCA/edit#gid=0", data: []}
 				],
 				demographics: [],
 				selectedConstituency: null,
@@ -163,11 +184,33 @@ $(document).ready(function() {
 
 				// Load suggestion engine datasets
 				App.suggestionDatasets.forEach(function(dataset,index) {
-					$.getJSON(dataset.url, function(dataJSON) {
-						console.log("Loaded "+dataset.url);
+					if(dataset.url.includes("docs.google.com")) {
+				        sheetrock({
+				            url: dataset.url, // Published
+				            query: "select A,B,C,D",
+				            callback: function loadedStoryData(err, opts, dataCSV) {
+					            var dataJSON = dataCSV.rows.map((x)=>x.cells);
+					            dataJSON.shift()
+					            dataJSON.forEach(function(datum,i) {
+									Object.keys(datum).forEach(function(cell,r) {
+					                    if(!isNaN(parseFloat(cell)) && isFinite(cell)) {
+					                        dataJSON[i][r] = parseFloat(cell)
+					                    }
+					                })
+					            })
+								store(dataJSON);
+				            }
+				        });
+					} else {
+						$.getJSON(dataset.url, function(dataJSON) {
+							store(dataJSON);
+						});
+					}
+					function store(dataJSON) {
+						console.log("Loaded "+dataset.url,dataJSON);
 						App.suggestionDatasets[index].data = dataJSON
 						App.$forceUpdate();
-					});
+					}
 				});
 
 				// Load statistics
@@ -416,7 +459,7 @@ $(document).ready(function() {
 					var thisConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]);
 					return constituency[2] + ": " + (thisConstituency ? thisConstituency.users : constituency[2]);
 				})
-				d3.selectAll(".constituency").on('click', function(constituency) {
+				d3.selectAll(".constituency").on('mouseover', function(constituency) {
 					App.selectedConstituency = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => o.name == constituency[2]) || constituency[2];
 					d3.event.stopPropagation();
 				})

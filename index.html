@@ -167,7 +167,7 @@
 									&nbsp;&nbsp;
 									<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
 										<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
-										<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpolitical'">Misc</label>
+										<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpolitical'">Nope</label>
 									</span>
 									&nbsp;&nbsp;
 									<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
@@ -221,6 +221,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>
+	<script src="sheetrock.min.js"></script>
 	<script src="vue.min.js"></script>
 	<script src="jquery-3.2.1.min.js"></script>
 	<script src="parties.js"></script>
