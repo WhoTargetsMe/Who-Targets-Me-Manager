@@ -74,7 +74,7 @@
 							</a>
 						</td>
 						<td>
-							<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' :advertiser='advertiser' :chars=4 class='db pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
+							<div v-if='suggestengine'><party-span v-for='party in advertiser.suggested' :key='party.id' :party='party' :advertiser='advertiser' :chars=4 class='db pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span></div>
 						</td>
 						<td class='tl ui'>
 							<div class='flex'>
