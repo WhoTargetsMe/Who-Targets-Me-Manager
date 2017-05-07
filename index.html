@@ -72,16 +72,16 @@
 		</section>
 		<div style='max-width: 1140px;' class='center ph3 pv4 '>
 			<h3 class='poppins'>National party coverage</h3>
-			<div class='fl w-30' >
+			<!-- <div class='fl w-30' >
 				<div id='nationalproportion'></div>
-				<!-- <div id='nationalcount'></div> -->
-			</div>
-			<table class='center fr w-70' v-if='coverageByParty'>
+				<!-- <div id='nationalcount'></div>
+			</div> -->
+			<table class='center' v-if='coverageByParty'>
 				<tr v-for='party in coverageByParty'>
 					<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.name}}</span></td>
 					<td><b>{{party.volunteers}}</b> volunteers</td>
 					<td><b>{{party.coverage.toFixed(6)}}%</b></td>
-					<td>of <b>{{party.population}}</b> party constituents/td>
+					<td>of <b>{{party.population}}</b> party constituents</td>
 				</tr>
 			</table>
 			<div class='cf'></div>
@@ -89,13 +89,13 @@
 			<hr>
 			<br>
 			<h3 class='poppins'>Constituency party coverage</h3>
-			<table class='tc center' v-if='list.length > 0'>
+			<table class='tc center f6' v-if='list.length > 0'>
 				<tr v-for='hex in list'>
 					<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.name}}</td>
-					<td class='f4'>has <span class='b' :class="{'red':hex.users == 0 }">{{hex.users}}</span> volunteers &nbsp;-</td>
+					<td>has <span class='b f5' :class="{'red':hex.users == 0 }">{{hex.users}}</span> volunteers &nbsp;-</td>
 					<td :class="{'red':hex.users == 0 }" class='b'>{{hex.coverage.toFixed(6)}}%</td>
-					<td class='tl'>of <b>{{hex.pop}}</b> locals</td>
-					<td class='tl'>-&nbsp; <b>{{(hex.share * 100).toFixed(2)}}%</b> voted <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.partyid'>{{hex.party}}</span> in 2015</td>
+					<td class='tl'>of {{hex.pop}} locals</td>
+					<td class='tl'>-&nbsp; <b>{{(hex.share * 100).toFixed(2)}}%</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.partyid'>{{hex.party}}</span> 2015 victory</td>
 				</tr>
 			</table>
 		</div>
