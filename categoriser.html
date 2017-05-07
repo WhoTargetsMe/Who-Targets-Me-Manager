@@ -81,24 +81,19 @@
 								<div class='v-mid flg'>
 									<div class='flex lh-copy'>
 										<span :class='{"o-0": !finished}' class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">&nbsp;
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click.stop.prevent="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political" />&nbsp;
 											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'undecided'">Reset</label>
 										</span>
 										&nbsp;&nbsp;
 										<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click.stop.prevent="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political" />&nbsp;
 											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpolitical'">Nope</label>
 										</span>
 										&nbsp;&nbsp;
 										<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'affiliation')" :id="advertiser.advertiser_id+'nonpartisan'" type="radio" value='no-party' v-model="advertiser.affiliation">&nbsp;
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click.stop.prevent="touch(advertiser,'affiliation')" :id="advertiser.advertiser_id+'nonpartisan'" type="radio" value='no-party' v-model="advertiser.affiliation" />&nbsp;
 											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpartisan'">Non-partisan</label>
 										</span>
-										<!-- &nbsp;&nbsp;&nbsp;
-										<span>
-											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">&nbsp;
-											<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
-										</span> -->
 									</div>
 								</div>
 								<div class='v-mid flg'>
@@ -131,7 +126,7 @@
 					:id="advertiser.advertiser_id+party.id"
 					v-model="advertiser.affiliation"
 					:value='party.id'
-					@click="touch(advertiser,'affiliation')">&nbsp;
+					@click="touch(advertiser,'affiliation')" />&nbsp;
 				<label class='pointer dib v-mid' :for="advertiser.advertiser_id+party.id">{{ party.short_name.slice(0,chars) }}</label>
 			</span>
 		</script>

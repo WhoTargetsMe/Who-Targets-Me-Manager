@@ -38,23 +38,31 @@
 								<div class='f5 i'>Select a constituency<br>for user count</div>
 							</div> -->
 							<div class='f7'>
+								<div class='b'>Colour scheme</div>
 								<label class='pointer'>
-									<input v-model='threshold' name='threshold' type='radio' value='0.1'>&nbsp;> 0 users
+									> 0 users&nbsp;<input v-model='threshold' name='threshold' type='radio' value='0.1' />
 								</label>
 								<br>
 								<label class='pointer'>
-									<input v-model='threshold' name='threshold' type='radio' value='10'>&nbsp;< 10 users
+									> 10 users&nbsp;<input v-model='threshold' name='threshold' type='radio' value='10' />
 								</label>
 								<br>
 								<label class='pointer'>
-									<input v-model='threshold' name='threshold' type='radio' :value='maxdownloads'>&nbsp;Least to Most users (full range)
+									Least to Most users (full range)&nbsp;<input v-model='threshold' name='threshold' type='radio' :value='maxdownloads' />
 								</label>
 								<br>
 								<label class='pointer'>
-									<input v-model='threshold' name='threshold' type='radio' value='coverage'>&nbsp;Proportion of population
+									Proportion of population&nbsp;<input v-model='threshold' name='threshold' type='radio' value='coverage' />
+								</label>
+								<br>
+								<br>
+								<div class='b'>Options</div>
+								<label class='pointer'>
+									Highlight no users&nbsp;<input v-model='showEmpty' name='showEmpty' type='checkbox' />
 								</label>
 							</div>
-							<span class='f7 gray'>Base map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
+							<br>
+							<span class='f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 						</div>
 					</div>
 				</div>

@@ -19,7 +19,8 @@ $(document).ready(function() {
 				threshold: 10,
 				maxdownloads: 60,
 				maxcoverage: 0.0001,
-				geometries: []
+				geometries: [],
+				showEmpty: true
 			},
 			mounted: function() {
 				var App = this;
@@ -38,6 +39,9 @@ $(document).ready(function() {
 			},
 			watch: {
 				threshold: function() {
+					this.statistics();
+				},
+				showEmpty: function() {
 					this.statistics();
 				}
 			},
@@ -84,7 +88,14 @@ $(document).ready(function() {
 					/////////
 
 					App.maxdownloads = Math.max.apply(Math,App.demographics.constituencies.map((o) => o.users))
-					var color_scale = d3.scaleLinear().domain([0,App.threshold == 'coverage' ? App.maxcoverage : App.threshold]).range(['#DDDDDD', '#000000'])
+					var domain = [0];
+					if(App.showEmpty == true) domain.push(0.0000001);
+					domain.push(App.threshold == 'coverage' ? App.maxcoverage : App.threshold);
+					var range = [];
+					if(App.showEmpty == true) range.push('#DD2200');
+					range.push('#d5d5da','#000000');
+					// console.log(domain,range);
+					var color_scale = d3.scaleLinear().domain(domain).range(range)
 
 					var width = 480;
 					var height = 750;

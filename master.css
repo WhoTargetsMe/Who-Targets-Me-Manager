@@ -209,5 +209,5 @@ path.constituency {
 }
 path.constituency:hover {
 	stroke-width: 2px;
-	stroke: red;
+	stroke: yellow;
 }
