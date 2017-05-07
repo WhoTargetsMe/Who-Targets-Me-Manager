@@ -76,8 +76,8 @@
 				<tr v-for='party in coverageByParty'>
 					<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.name}}</span></td>
 					<td><b>{{party.volunteers}}</b> volunteers</td>
-					<td><b>{{party.coverage.toFixed(6)}}%</b> average coverage</td>
-					<td>of <b>{{party.population}}</b> party-represented constituents</td>
+					<td><b>{{party.coverage.toFixed(6)}}%</b></td>
+					<td>of <b>{{party.population}}</b> pax represented by this party</td>
 				</tr>
 			</table>
 			<br><br>
