@@ -20,7 +20,8 @@ $(document).ready(function() {
 				maxdownloads: 60,
 				maxcoverage: 0.0001,
 				geometries: [],
-				showEmpty: true
+				showEmpty: true,
+				parties: []
 			},
 			mounted: function() {
 				var App = this;
@@ -133,67 +134,139 @@ $(document).ready(function() {
 						d3.json("hexagons-topo.json", function(error, hexmap) {
 							d3.json("regions-topo.json", function(error, regionsmap) {
 								d3.csv("ons-age.csv", function(error, agedata) {
-									if (error) return console.error(error);
+									d3.csv("ge2015.csv", function(error, ge2015) {
+										d3.json("datasets/parties.json", function(error, parties) {
+											App.parties = parties;
+											App.generatePartyColorClasses();
 
-									hexmap.objects.hexagons.geometries.forEach((hex,index) => {
-										if(!hexmap.objects.hexagons.geometries[index]) return false;
-										thisAgeRow = agedata.find((someConst)=>someConst.GEOID == hex.properties.constituency);
-										hexmap.objects.hexagons.geometries[index].properties.pop = thisAgeRow.PopTotalConstNum;
+											if (error) return console.error(error);
 
-										thisUserRow = match(hex);
-										hexmap.objects.hexagons.geometries[index].properties.users = typeof thisUserRow != 'string' ? thisUserRow.users : 0;
+											hexmap.objects.hexagons.geometries.forEach((hex,index) => {
+												if(!hexmap.objects.hexagons.geometries[index]) return false;
 
-										hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.pop
+												// Population
+												thisAgeRow = agedata.find((someConst)=>someConst.GEOID == hex.properties.constituency);
+												hexmap.objects.hexagons.geometries[index].properties.pop = thisAgeRow.PopTotalConstNum;
+
+												// Users
+												thisUserRow = match(hex);
+												hexmap.objects.hexagons.geometries[index].properties.users = typeof thisUserRow != 'string' ? thisUserRow.users : 0;
+
+												// Coverage
+												hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.pop
+
+												// Current party
+												this2015 = ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency);
+												hexmap.objects.hexagons.geometries[index].properties.party = this2015.party_name;
+												hexmap.objects.hexagons.geometries[index].properties.partyObj = parties[1].list.find((p)=> {
+													return p.name && this2015.party_name && (
+														p.name.includes(this2015.party_name) || this2015.party_name.includes(p.name)
+													);
+												});
+												hexmap.objects.hexagons.geometries[index].properties.partyid =
+												hexmap.objects.hexagons.geometries[index].properties.partyObj ?
+												hexmap.objects.hexagons.geometries[index].properties.partyObj.id : '';
+												hexmap.objects.hexagons.geometries[index].properties.share = parseFloat(this2015.share);
+											});
+
+											App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
+
+											App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries
+												.map((g)=>g.properties)
+												.sort((a,b) => a.coverage - b.coverage)));
+
+											var constituencies = topojson.feature(hexmap, hexmap.objects.hexagons);
+
+											svg.append('g')
+												.attr('id','hex')
+												.selectAll(".constituency")
+											    .data(constituencies.features)
+											  	.enter().append("path")
+											    .attr("class", function(d) { return "constituency"; })
+											    .attr("id", function(d) { return d.properties.constituency; })
+											    .attr("d", path)
+												.attr("fill", function(d) {
+													return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
+												})
+												.append('title')
+												.text(function(constituency) {
+													var thisConstituency = match(constituency);
+													return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
+												})
+
+											var regions = topojson.feature(regionsmap, regionsmap.objects.regions);
+
+											svg.append('g')
+												.attr('id','regions')
+												.selectAll(".regions")
+											    .data(regions.features)
+											  	.enter().append("path")
+											    .attr("class", function(d) { return "region "+d.coordinates; })
+											    .attr("id", function(d) { return d.properties.name; })
+											    .attr("d", path);
+
+											d3.selectAll(".constituency").on('mouseover', function(d) {
+												// svg.selectAll("#hex path").sort(function (a, b) { // select the parent and sort the path's
+												// 	if (a.properties.constituency != d.properties.constituency) return -1;               // a is not the hovered element, send "a" to the back
+												// 	else return 1;                             // a is the hovered element, bring "a" to the front
+												// });
+												this.parentNode.appendChild(this);
+												App.selectedConstituency = d.properties
+												d3.event.stopPropagation();
+											})
+										});
 									});
-
-									App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
-
-									App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries
-										.map((g)=>g.properties)
-										.sort((a,b) => a.coverage - b.coverage)));
-
-									var constituencies = topojson.feature(hexmap, hexmap.objects.hexagons);
-
-									svg.append('g')
-										.attr('id','hex')
-										.selectAll(".constituency")
-									    .data(constituencies.features)
-									  	.enter().append("path")
-									    .attr("class", function(d) { return "constituency"; })
-									    .attr("id", function(d) { return d.properties.constituency; })
-									    .attr("d", path)
-										.attr("fill", function(d) {
-											return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
-										})
-										.append('title')
-										.text(function(constituency) {
-											var thisConstituency = match(constituency);
-											return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
-										})
-
-									var regions = topojson.feature(regionsmap, regionsmap.objects.regions);
-
-									svg.append('g')
-										.attr('id','regions')
-										.selectAll(".regions")
-									    .data(regions.features)
-									  	.enter().append("path")
-									    .attr("class", function(d) { return "region "+d.coordinates; })
-									    .attr("id", function(d) { return d.properties.name; })
-									    .attr("d", path);
-
-									d3.selectAll(".constituency").on('mouseover', function(d) {
-										// svg.selectAll("#hex path").sort(function (a, b) { // select the parent and sort the path's
-										// 	if (a.properties.constituency != d.properties.constituency) return -1;               // a is not the hovered element, send "a" to the back
-										// 	else return 1;                             // a is the hovered element, bring "a" to the front
-										// });
-										this.parentNode.appendChild(this);
-										App.selectedConstituency = d.properties
-										d3.event.stopPropagation();
-									})
 								});
 							});
 						});
+					}
+				},
+				generatePartyColorClasses: function() {
+					var css = "";
+
+					this.parties[1].list.forEach(function(party) {
+						css +=`
+
+						.party-${party.id} {
+							background-color: ${party.srgb ? '#'+party.srgb : 'gray'} !important;
+							color: ${party.srgb ? invertHEX(party.srgb, true) : 'white'} !important;
+						}`;
+					});
+
+					$(`<style id='party-styles'>${css}</style>`).appendTo("head");
+
+					function invertHEX(hex, bw) {
+						if (hex.indexOf('#') === 0) {
+							hex = hex.slice(1);
+						}
+						// convert 3-digit hex to 6-digits.
+						if (hex.length === 3) {
+							hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+						}
+						if (hex.length !== 6) {
+							throw new Error('Invalid HEX color.');
+						}
+						var r = parseInt(hex.slice(0, 2), 16),
+							g = parseInt(hex.slice(2, 4), 16),
+							b = parseInt(hex.slice(4, 6), 16);
+						if (bw) {
+							// http://stackoverflow.com/a/3943023/112731
+							return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+								? '#000000'
+								: '#FFFFFF';
+						}
+						// invert color components
+						r = (255 - r).toString(16);
+						g = (255 - g).toString(16);
+						b = (255 - b).toString(16);
+						// pad each with zeros and return
+						return "#" + padZero(r) + padZero(g) + padZero(b);
+					}
+
+					function padZero(str, len) {
+						len = len || 2;
+						var zeros = new Array(len).join('0');
+						return (zeros + str).slice(-len);
 					}
 				}
 			}
