@@ -6,10 +6,6 @@ $(document).ready(function() {
 
 	$.getJSON("https://who-targets-me.herokuapp.com/demographics/", function(demographics) {
 
-		$("#loading").hide();
-		$("#app").show();
-		console.log("All loaded");
-
 		var App = new Vue({
 			el: '#app',
 			data: {
@@ -129,13 +125,14 @@ $(document).ready(function() {
 								return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
 							})
 					} else {
-						App.mapGenerated = true;
+						// App.mapGenerated = true;
 
 						d3.json("hexagons-topo.json", function(error, hexmap) {
 							d3.json("regions-topo.json", function(error, regionsmap) {
 								d3.csv("ons-age.csv", function(error, agedata) {
 									d3.csv("ge2015.csv", function(error, ge2015) {
 										d3.json("datasets/parties.json", function(error, parties) {
+											console.log("(Re)rendering map")
 											App.parties = parties;
 											App.generatePartyColorClasses();
 
@@ -214,6 +211,12 @@ $(document).ready(function() {
 												App.selectedConstituency = d.properties
 												d3.event.stopPropagation();
 											})
+
+											$("#loading").hide();
+											$("#app").show();
+											console.log("All loaded");
+											if(!App.mapGenerated) App.statistics()
+											App.mapGenerated = true;
 										});
 									});
 								});
