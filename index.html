@@ -5,88 +5,24 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
-	<style>
-	path { cursor: pointer; }
-	.partysuggest + .partysuggest:before {
-		content: " or ";
-		font-weight: normal !important;
-	}
-
-	.flg {
-		flex-grow: 1;
-	}
-	.fls {
-		flex-shrink: 1;
-	}
-
-	.confirm {
-		max-width: 0;
-	    transition: max-width 0.15s ease-out;
-	    overflow: hidden;
-		pointer-events: none;
-		background: #EEE;
-	}
-
-	#save-btn {
-		user-select: none;
-		overflow: hidden;
-	}
-
-	#save-btn:hover .confirm {
-		padding-left: 5px;
-		padding-right: 5px;
-		max-width: 200px;
-	    transition: max-width 0.1s ease-in;
-		pointer-events: all;
-	}
-
-	.confirm:after {
-		content: "?"
-	}
-
-	.confirm:hover {
-		max-width: 200px;
-		pointer-events: all;
-		background: #2ECC40;
-		color: white;
-	}
-
-	.confirm:hover:after {
-		content: "!"
-	}
-
-	.confirm:active {
-		padding-left: 5px;
-		padding-right: 5px;
-		max-width: 200px;
-		pointer-events: all;
-		background: black;
-		color: #01FF70;
-	}
-
-	.todo .advertiser-row td.ui {
-		opacity: 0.3;
-	}
-
-	.todo .advertiser-row:hover td.ui {
-		opacity: 1;
-	}
-	</style>
 </head>
 <body class='pv5'>
-	<div class='cf'></div>
 	<div id='loading' class='measure center tc' style="width: 400px">
 		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
 	</div>
-	<div id='app' style='display: none;'>
-		<section style='max-width: 1180px;' class='center bg-light-gray'>
+	<main id='app' style='display: none;'>
+		<header style='max-width: 1140px;' class='center ph3 pv4'>
+			<a class='b f3 poppins dib fr mt2' href='categoriser.html'>Advertiser categoriser</a>
+			<div class='b f2 poppins'>Extension coverage</div>
+		</header>
+		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
 					<div class='fl w-70'>
 						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</div>
-						<h4 class='mt0 gray'>
-							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female" }}s&nbsp;&nbsp;&nbsp;</span>
-						</h4>
+						<div class='f4 mt0 gray'>
+							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
+						</div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
 					<div class='mt2 fr w-30 gray'>
@@ -103,135 +39,15 @@
 				<div class='cf'></div>
 			</div>
 		</section>
-		<section style='max-width: 1140px;' class='mt4 center ph3'>
-			<div class='f2 b dib poppins lh-title'>Advertiser categoriser</div>
-			<p class='lh-copy ma0'>Here's a list of advertisers we've recorded. Tell us which party they're politically campaigning for.</p>
-			<h4>Dev to-do</h4>
-			<ul>
-				<li>Create <code>advertiser</code> table, link to <code>advert</code> table</li>
-				<li>Add <code>GET /advertisers/</code> endpoint, receive <code>advertiser_id,advertiser_vanity,advertiser</code> for <b>50</b> advertisers</li>
-				<li>Add <code>POST /advertisers/:id</code> endpoint, update <code>political (BOOL),affiliation (party id STRING)</code> of an advertiser</li>
-				<li>Simple user/password for access</li>
-				<li>Gameify user categorising (simple leaderboard)</li>
-			</ul>
-			<advertiser-table class='mt1 center pv3 todo'
-				:suggestengine='suggestengine'
-				:politicians='politicians'
-				:parties='parties'
-				:advertisers='advertisersToClassify'>
-			</advertiser-table>
-
-			<div v-if='advertisersClassified.length > 0' class='mt3'>
-				<div class='f3 b poppins'>Categorised</div>
-				<div id='save-btn' class='mt1 dib br2 f5 ba b--gray gray pointer ttl lato'>
-					<div class='dib v-mid ph2 pv1'>Save {{advertisersClassified.length}} categorised advertisers</div>
-					<div id='save' v-on:click='save(advertisersClassified)' class='dib pv1 v-mid dib confirm b'>Really</div>
-				</div>
-			</div>
-			<advertiser-table class='center'
-				:suggestengine='suggestengine'
-				:politicians='politicians'
-				:parties='parties'
-				:advertisers='advertisersClassified'
-				:finished=true>
-			</advertiser-table>
-		</section>
-		<!-- <section style='max-width: 1140px;' class='center ph4 pv3 o-40' is='advertiser-table' :suggestengine='suggestengine' :politicians='politicians' :parties='parties' :advertisers='advertisers'>All ads</section> -->
-	</div>
-
-	<script type="text/x-template" id='advertiser-table'>
-		<div v-if='advertisers.length > 0'>
-			<table v-if='advertisers.length > 0' class='w-100 collapse'>
-				<thead>
-					<th class='tl' colspan=2>Advertiser</th>
-					<th class='tl' style='width: 10px;'>Suggested</th>
-					<th class='tl tc'>Involvement in UK politics</th>
-					<th class='tr'>Selected stance/party</th>
-				</thead>
-				<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id" class='advertiser-row'>
-					<td style='width:50px;'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr1 pointer' target="_blank">
-							<img class='dib v-mid' style='height: 50px; width: 50px;'  :src="'http://graph.facebook.com/'+advertiser.advertiser_id+'/picture?type=square'" />
-						</a>
-					</td>
-					<td class='w-20'>
-						<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='pointer' target="_blank">
-							<div class='pl2 dib v-mid'>
-								<div class='dark-blue b'>{{advertiser.advertiser}}</div>
-							</div>
-						</a>
-					</td>
-					<td>
-						<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' :advertiser='advertiser' :chars=4 class='db pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
-					</td>
-					<td class='tl ui'>
-						<div class='flex'>
-							<div class='v-mid flg'>
-								<div class='flex lh-copy'>
-									<span :class='{"o-0": !finished}' class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-										<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">&nbsp;
-										<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'undecided'">Reset</label>
-									</span>
-									&nbsp;&nbsp;
-									<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-										<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
-										<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpolitical'">Nope</label>
-									</span>
-									&nbsp;&nbsp;
-									<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
-										<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'affiliation')" :id="advertiser.advertiser_id+'nonpartisan'" type="radio" value='no-party' v-model="advertiser.affiliation">&nbsp;
-										<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpartisan'">Non-partisan</label>
-									</span>
-									<!-- &nbsp;&nbsp;&nbsp;
-									<span>
-										<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">&nbsp;
-										<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
-									</span> -->
-								</div>
-							</div>
-							<div class='v-mid flg'>
-								<div class='flex lh-copy'>
-									<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :key='party.id' :party='party' :advertiser='advertiser' class='flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
-								</div>
-							</div>
-						</div>
-					</td>
-					<td class='tr w-10'>
-						<select class='f6 lh-copy v-mid br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
-							:class='"party-"+advertiser.affiliation'>
-							<optgroup v-for="group in parties" :label="group.label">
-								<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
-									{{ party.short_name }}
-								</option>
-							</optgroup>
-						</select>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</script>
-
-	<script type="text/x-template" id='party-span' inline-template>
-		<!-- <span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span> -->
-		<span class='pointer br2 f7 b dib ph1 tc lh-copy' v-bind:class='"party-"+party.id' >
-			<input type="radio" class='pointer dib v-mid pointer'
-				:name="advertiser.advertiser_id+'affiliation'"
-				:id="advertiser.advertiser_id+party.id"
-				v-model="advertiser.affiliation"
-				:value='party.id'
-				@click="touch(advertiser,'affiliation')">&nbsp;
-			<label class='pointer dib v-mid' :for="advertiser.advertiser_id+party.id">{{ party.short_name.slice(0,chars) }}</label>
-		</span>
-	</script>
+	</main>
 
 	<script src="uk.electionmap.d3.min.js"></script>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>
-	<script src="sheetrock.min.js"></script>
 	<script src="vue.min.js"></script>
 	<script src="jquery-3.2.1.min.js"></script>
-	<script src="parties.js"></script>
+	<script src="view.stats.js"></script>
 </body>
 </html>

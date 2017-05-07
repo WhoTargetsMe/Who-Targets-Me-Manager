@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Parties</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
+	<link rel="stylesheet" type="text/css" href="master.css">
+</head>
+<body class='pv5'>
+	<div id='loading' class='measure center tc' style="width: 400px">
+		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
+	</div>
+	<main id='app' style='display: none;'>
+		<header style='max-width: 1140px;' class='center ph3 pt4'>
+			<a class='b f3 poppins dib fr mt2' href='index.html'>Extension coverage</a>
+			<div class='f2 b dib poppins lh-title'>Advertiser categoriser</div>
+			<p class='lh-copy ma0'>Here's a list of advertisers we've recorded. Tell us which party they're politically campaigning for.</p>
+		</header>
+		<section style='max-width: 1140px;' class='mt4 center ph3'>
+			<h4>Dev to-do</h4>
+			<ul>
+				<li>Create <code>advertiser</code> table, link to <code>advert</code> table</li>
+				<li>Add <code>GET /advertisers/</code> endpoint, receive <code>advertiser_id,advertiser_vanity,advertiser</code> for <b>50</b> advertisers</li>
+				<li>Add <code>POST /advertisers/:id</code> endpoint, update <code>political (BOOL),affiliation (party id STRING)</code> of an advertiser</li>
+				<li>Simple user/password for access</li>
+				<li>Gameify user categorising (simple leaderboard)</li>
+			</ul>
+			<advertiser-table class='mt1 center pv3 todo'
+				:suggestengine='suggestengine'
+				:politicians='politicians'
+				:parties='parties'
+				:advertisers='advertisersToClassify'>
+			</advertiser-table>
+
+			<div v-if='advertisersClassified.length > 0' class='mt3'>
+				<div class='f3 b poppins'>Categorised</div>
+				<div id='save-btn' class='mt1 dib br2 f5 ba b--gray gray pointer ttl lato'>
+					<div class='dib v-mid ph2 pv1'>Save {{advertisersClassified.length}} categorised advertisers</div>
+					<div id='save' v-on:click='save(advertisersClassified)' class='dib pv1 v-mid dib confirm b'>Really</div>
+				</div>
+			</div>
+			<advertiser-table class='center'
+				:suggestengine='suggestengine'
+				:politicians='politicians'
+				:parties='parties'
+				:advertisers='advertisersClassified'
+				:finished=true>
+			</advertiser-table>
+		</section>
+	</main>
+
+	<!-- Categoriser -->
+
+		<script type="text/x-template" id='advertiser-table'>
+			<div v-if='advertisers.length > 0'>
+				<table v-if='advertisers.length > 0' class='w-100 collapse'>
+					<thead>
+						<th class='tl' colspan=2>Advertiser</th>
+						<th class='tl' style='width: 10px;'>Suggested</th>
+						<th class='tl tc'>Involvement in UK politics</th>
+						<th class='tr'>Selected stance/party</th>
+					</thead>
+					<tr v-for="advertiser in advertisers" :key="advertiser.advertiser_id" class='advertiser-row'>
+						<td style='width:50px;'>
+							<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='mr1 pointer' target="_blank">
+								<img class='dib v-mid' style='height: 50px; width: 50px;'  :src="'http://graph.facebook.com/'+advertiser.advertiser_id+'/picture?type=square'" />
+							</a>
+						</td>
+						<td class='w-20'>
+							<a :href="'https://facebook.com/'+advertiser.advertiser_id" class='pointer' target="_blank">
+								<div class='pl2 dib v-mid'>
+									<div class='dark-blue b'>{{advertiser.advertiser}}</div>
+								</div>
+							</a>
+						</td>
+						<td>
+							<party-span v-for='party in suggestParty(advertiser)' :key='party.id' :party='party' :advertiser='advertiser' :chars=4 class='db pointer partysuggest' @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :class='{selected: party.id == advertiser.affiliation}'></party-span>
+						</td>
+						<td class='tl ui'>
+							<div class='flex'>
+								<div class='v-mid flg'>
+									<div class='flex lh-copy'>
+										<span :class='{"o-0": !finished}' class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'undecided'" type="radio" value='' v-model="advertiser.political">&nbsp;
+											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'undecided'">Reset</label>
+										</span>
+										&nbsp;&nbsp;
+										<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'nonpolitical'" type="radio" value=false v-model="advertiser.political">&nbsp;
+											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpolitical'">Nope</label>
+										</span>
+										&nbsp;&nbsp;
+										<span class='pointer br2 f7 b dib ph1 tc lh-copy flg' style='border: 2px solid gray;'>
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'affiliation')" :id="advertiser.advertiser_id+'nonpartisan'" type="radio" value='no-party' v-model="advertiser.affiliation">&nbsp;
+											<label class='pointer dib v-mid' :for="advertiser.advertiser_id+'nonpartisan'">Non-partisan</label>
+										</span>
+										<!-- &nbsp;&nbsp;&nbsp;
+										<span>
+											<input :name="advertiser.advertiser_id+'political'" class='v-mid pointer' @click="touch(advertiser,'political')" :id="advertiser.advertiser_id+'political'" type="radio" value=true v-model="advertiser.political">&nbsp;
+											<label class='pointer' :for="advertiser.advertiser_id+'political'">Campaiging</label>
+										</span> -->
+									</div>
+								</div>
+								<div class='v-mid flg'>
+									<div class='flex lh-copy'>
+										<party-span v-for="party in topparties(5)" @click.native="advertiser.affiliation = party.id; touch(advertiser,'affiliation')" :key='party.id' :party='party' :advertiser='advertiser' class='flg' :class='{selected: party.id == advertiser.affiliation}' :chars=4></party-span>
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class='tr w-10'>
+							<select class='f6 lh-copy v-mid br2 pointer b ph2 pv1 selected' v-model="advertiser.affiliation" @click.stop="touch(advertiser,'affiliation',$event)"
+								:class='"party-"+advertiser.affiliation'>
+								<optgroup v-for="group in parties" :label="group.label">
+									<option v-for="party in group.list" v-bind:value="party.id"  :key='party.id'>
+										{{ party.short_name }}
+									</option>
+								</optgroup>
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</script>
+
+		<script type="text/x-template" id='party-span' inline-template>
+			<!-- <span class='br2 f7 b dib ph1 tc' v-bind:class='"party-"+party.id'>{{ party.short_name.slice(0,chars) }}</span> -->
+			<span class='pointer br2 f7 b dib ph1 tc lh-copy' v-bind:class='"party-"+party.id' >
+				<input type="radio" class='pointer dib v-mid pointer'
+					:name="advertiser.advertiser_id+'affiliation'"
+					:id="advertiser.advertiser_id+party.id"
+					v-model="advertiser.affiliation"
+					:value='party.id'
+					@click="touch(advertiser,'affiliation')">&nbsp;
+				<label class='pointer dib v-mid' :for="advertiser.advertiser_id+party.id">{{ party.short_name.slice(0,chars) }}</label>
+			</span>
+		</script>
+	<!-- -->
+
+	<script src="sheetrock.min.js"></script>
+	<script src="vue.min.js"></script>
+	<script src="jquery-3.2.1.min.js"></script>
+	<script src="view.categoriser.js"></script>
+</body>
+</html>

@@ -125,3 +125,70 @@ a:hover {
 	height: 40px;
 	border-radius: 5px;
 }
+
+
+path { cursor: pointer; }
+.partysuggest + .partysuggest:before {
+	content: " or ";
+	font-weight: normal !important;
+}
+
+.flg {
+	flex-grow: 1;
+}
+.fls {
+	flex-shrink: 1;
+}
+
+.confirm {
+	max-width: 0;
+	transition: max-width 0.15s ease-out;
+	overflow: hidden;
+	pointer-events: none;
+	background: #EEE;
+}
+
+#save-btn {
+	user-select: none;
+	overflow: hidden;
+}
+
+#save-btn:hover .confirm {
+	padding-left: 5px;
+	padding-right: 5px;
+	max-width: 200px;
+	transition: max-width 0.1s ease-in;
+	pointer-events: all;
+}
+
+.confirm:after {
+	content: "?"
+}
+
+.confirm:hover {
+	max-width: 200px;
+	pointer-events: all;
+	background: #2ECC40;
+	color: white;
+}
+
+.confirm:hover:after {
+	content: "!"
+}
+
+.confirm:active {
+	padding-left: 5px;
+	padding-right: 5px;
+	max-width: 200px;
+	pointer-events: all;
+	background: black;
+	color: #01FF70;
+}
+
+.todo .advertiser-row td.ui {
+	opacity: 0.3;
+}
+
+.todo .advertiser-row:hover td.ui {
+	opacity: 1;
+}
