@@ -17,7 +17,8 @@ $(document).ready(function() {
 				maxcoverage: 0.0001,
 				geometries: [],
 				showEmpty: true,
-				parties: []
+				parties: [],
+				coverageByParty: {}
 			},
 			mounted: function() {
 				var App = this;
@@ -143,11 +144,11 @@ $(document).ready(function() {
 
 												// Population
 												thisAgeRow = agedata.find((someConst)=>someConst.GEOID == hex.properties.constituency);
-												hexmap.objects.hexagons.geometries[index].properties.pop = thisAgeRow.PopTotalConstNum;
+												hexmap.objects.hexagons.geometries[index].properties.pop = parseInt(thisAgeRow.PopTotalConstNum);
 
 												// Users
 												thisUserRow = match(hex);
-												hexmap.objects.hexagons.geometries[index].properties.users = typeof thisUserRow != 'string' ? thisUserRow.users : 0;
+												hexmap.objects.hexagons.geometries[index].properties.users = parseInt(typeof thisUserRow != 'string' ? thisUserRow.users : 0);
 
 												// Coverage
 												hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.pop
@@ -164,6 +165,28 @@ $(document).ready(function() {
 												hexmap.objects.hexagons.geometries[index].properties.partyObj ?
 												hexmap.objects.hexagons.geometries[index].properties.partyObj.id : '';
 												hexmap.objects.hexagons.geometries[index].properties.share = parseFloat(this2015.share);
+
+												// National volunteer coverage calculations
+												partyStats = hexmap.objects.hexagons.geometries.reduce(function(result, constituency) {
+													if (result[constituency.properties.party]) {
+														result[constituency.properties.party].volunteers += parseInt(constituency.properties.users);
+														result[constituency.properties.party].population += parseInt(constituency.properties.pop);
+														result[constituency.properties.party].coverage = result[constituency.properties.party].volunteers / result[constituency.properties.party].population;
+													} else {
+														result[constituency.properties.party] = {
+															name: constituency.properties.party,
+															id: constituency.properties.partyid,
+															volunteers: parseInt(constituency.properties.users),
+															population: parseInt(constituency.properties.pop),
+															coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.pop)
+														};
+													}
+													return result;
+												}, {});
+
+												App.coverageByParty = Object.keys(partyStats)
+																		.map(function(val) { return partyStats[val] })
+																		.sort((a,b)=>b.coverage-a.coverage);
 											});
 
 											App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
