@@ -72,8 +72,8 @@
 		<div style='max-width: 1140px;' class='center ph3 pv4 '>
 			<table class='tc center'>
 				<tr  v-if='list.length > 0' v-for='hex in list'>
-					<td class='tr b'>{{hex.name}}</td>
-					<td :class="{'red':hex.users == 0 }" class='f4'><span class='b'>{{hex.users}}</span> volunteers &nbsp;-</td>
+					<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.name}}</td>
+					<td class='f4'>has <span class='b' :class="{'red':hex.users == 0 }">{{hex.users}}</span> volunteers &nbsp;-</td>
 					<td :class="{'red':hex.users == 0 }" class='b'>{{hex.coverage.toFixed(6)}}%</td>
 					<td class='tl'>of <b>{{hex.pop}}</b> locals</td>
 					<td class='tl'>-&nbsp; <b>{{(hex.share * 100).toFixed(2)}}%</b> for <span class='f7 b pv1 ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.partyid'>{{hex.party}}</span></td>
