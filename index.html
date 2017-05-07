@@ -72,14 +72,19 @@
 		</section>
 		<div style='max-width: 1140px;' class='center ph3 pv4 '>
 			<h3 class='poppins'>National party coverage</h3>
-			<table class='center' v-if='coverageByParty'>
+			<div class='fl w-30' >
+				<div id='nationalproportion'></div>
+				<!-- <div id='nationalcount'></div> -->
+			</div>
+			<table class='center fr w-70' v-if='coverageByParty'>
 				<tr v-for='party in coverageByParty'>
 					<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.name}}</span></td>
 					<td><b>{{party.volunteers}}</b> volunteers</td>
 					<td><b>{{party.coverage.toFixed(6)}}%</b></td>
-					<td>of <b>{{party.population}}</b> pax represented by this party</td>
+					<td>of <b>{{party.population}}</b> party constituents/td>
 				</tr>
 			</table>
+			<div class='cf'></div>
 			<br><br>
 			<hr>
 			<br>

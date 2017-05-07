@@ -188,6 +188,7 @@ $(document).ready(function() {
 																		.map(function(val) { return partyStats[val] })
 																		.sort((a,b)=>b.coverage-a.coverage);
 											});
+											nationalStats();
 
 											App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
 
@@ -245,6 +246,61 @@ $(document).ready(function() {
 								});
 							});
 						});
+					}
+
+					function nationalStats() {
+						console.log("National stats",App.coverageByParty);
+						vega.embed("#nationalproportion", {
+							"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+							"width": $("#national").width(),
+							"height": 200,
+							"data": {
+								"values": App.coverageByParty
+							},
+							"mark": "bar",
+							"encoding": {
+								"x": {"field": "name", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 }, sort: "descending" },
+								"y": {"field": "coverage", "type": "quantitative", "axis": { "domain": false, "title": "% (0.0000) coverage" } },
+								"color": {
+								  "field": "x",
+								  "type": "nominal",
+								  "legend": false
+								}
+							},
+							"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
+						}, {
+							"mode": "vega-lite",
+							"actions": false,
+							"config": {
+								"autosize": { "type": "fit", "resize": true }
+							}
+						}, function(error, result) {});
+						console.log("National stats",App.coverageByParty);
+						// vega.embed("#nationalcount", {
+						// 	"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+						// 	"width": $("#national").width(),
+						// 	"height": 100,
+						// 	"data": {
+						// 		"values": App.coverageByParty
+						// 	},
+						// 	"mark": "bar",
+						// 	"encoding": {
+						// 		"x": {"field": "name", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 }, sort: "descending" },
+						// 		"y": {"field": "volunteers", "type": "quantitative", "axis": { "domain": false, "title": "Volunteers by party constituency" } },
+						// 		"color": {
+						// 		  "field": "x",
+						// 		  "type": "nominal",
+						// 		  "legend": false
+						// 		}
+						// 	},
+						// 	"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
+						// }, {
+						// 	"mode": "vega-lite",
+						// 	"actions": false,
+						// 	"config": {
+						// 		"autosize": { "type": "fit", "resize": true }
+						// 	}
+						// }, function(error, result) {});
 					}
 				},
 				generatePartyColorClasses: function() {
