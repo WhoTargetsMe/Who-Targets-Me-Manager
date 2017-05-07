@@ -84,7 +84,7 @@ $(document).ready(function() {
 					/////////
 
 					App.maxdownloads = Math.max.apply(Math,App.demographics.constituencies.map((o) => o.users))
-					var color_scale = d3.scaleLinear().domain([0,App.threshold == 'coverage' ? 0.00015 : App.threshold]).range(['#DDDDDD', '#4C78A8'])
+					var color_scale = d3.scaleLinear().domain([0,App.threshold == 'coverage' ? App.maxcoverage : App.threshold]).range(['#DDDDDD', '#000000'])
 
 					var width = 480;
 					var height = 750;

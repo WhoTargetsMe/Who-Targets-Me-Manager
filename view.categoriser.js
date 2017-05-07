@@ -19,6 +19,139 @@ $(document).ready(function() {
 		$("#app").show();
 		console.log("All loaded");
 
+		Vue.component('party-span', {
+			template: "#party-span",
+			props: {
+				'party': Object,
+				'chars': {
+					type: Number,
+					default: 20
+				},
+				'advertiser': Object
+			}
+		});
+
+		Vue.component('advertiser-table', {
+			template: "#advertiser-table",
+			props: {
+				'advertisers': Object,
+				'parties': Object,
+				'politicians': Object,
+				'suggestengine': Object,
+				'finished': {
+					default: false
+				}
+			},
+			methods: {
+				topparties: function(x) {
+					return this.parties[1].list.slice(0,x);
+				},
+				suggestParty: function(advertiser) {
+					var Component = this;
+
+					if(Component.suggestengine) {
+						console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
+						var likelyParties = new Set();
+
+						var matchedEntities = Component.politicians.filter(function(candidate) {
+							return (
+								candidate.name == advertiser.advertiser
+								|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
+								|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
+								|| (
+									candidate.facebook
+									&& candidate.facebook != ""
+									&& (
+										candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
+										|| (
+											advertiser.advertiser_vanity
+											&& advertiser.advertiser_vanity != ""
+											&& (
+												candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+												|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
+											)
+										)
+									)
+									|| (
+										candidate.facebook_vanity
+										&& candidate.facebook_vanity != ""
+
+										&&advertiser.advertiser_vanity
+										&& advertiser.advertiser_vanity != ""
+
+										&& (
+											candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
+											|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
+										)
+									)
+								)
+							)
+						});
+
+						if(matchedEntities.length && matchedEntities.length > 0) {
+							// console.log("Matches for "+advertiser.advertiser,matchedEntities)
+							matchedEntities.forEach(function(entity) {
+								likelyParties.add(entity.party.toLowerCase());
+							});
+						}
+
+						likelyParties = Array.from(likelyParties)
+
+						var parties = [];
+						likelyParties.forEach(function(likelyPartyID) {
+							Component.parties[1].list.forEach(function(checkParty) {
+								if(likelyPartyID == checkParty.id) parties.push(checkParty);
+							});
+						})
+						return parties;
+					} else {
+						return [];
+					}
+				},
+				touch: function(x,prop,$event = null) {
+					var Component = this;
+
+					if($event) {
+						// console.log("Listening for selection on",$($event.target))
+						$($event.target).change(() => {
+							// console.log("Clicked dropdown",$event.target);
+							$($event.target).off('change');
+							touchHappened()
+						});
+					} else touchHappened();
+
+					function touchHappened() {
+						// console.log("!!!!! I just clicked ",x.advertiser);
+						x.touchedDate = Date.now();
+						x.touchedProperty = prop;
+
+						if(x) {
+							// console.log("Touched "+x.touchedProperty+" on "+x.advertiser);
+							if(x.touchedProperty == 'political') {
+								if(x.political == 'true') {
+									// console.log("Nonpartisan "+x.advertiser)
+									x.affiliation = 'no-party';
+								} else {
+									// console.log("Clearing affil for "+x.advertiser)
+									x.affiliation = '';
+								}
+							} else if(x.touchedProperty == 'affiliation') {
+								if(x.affiliation != '') {
+									// console.log("Applying political to "+x.advertiser)
+									x.political = 'true';
+								} else {
+									// console.log("Clearing political for "+x.advertiser)
+									x.political = 'false';
+								}
+							}
+
+							Component.$forceUpdate();
+						}
+					}
+				}
+			}
+		});
+
 		var App = new Vue({
 			el: '#app',
 			data: {
@@ -36,14 +169,14 @@ $(document).ready(function() {
 
 				var parties = [];
 				var advertisers = [];
-				$.getJSON("datasets/parties.json?v="+Date.now(), (partiesJSON) => { App.parties = partiesJSON; start(); });
-				$.getJSON("datasets/mock-advertisers.json?v="+Date.now(), (advertisersJSON) => { App.advertisers = advertisersJSON; start(); });
+				$.getJSON("datasets/parties.json?v="+Date.now(), (partiesJSON) => { App.parties = partiesJSON });
+				$.getJSON("datasets/mock-advertisers.json?v="+Date.now(), (advertisersJSON) => { App.advertisers = advertisersJSON });
 
-				function start() {
-					console.log(parties.length, advertisers.length);
-					if(parties.length == 0 || advertisers.length == 0) return false;
+				// function start() {
+				// 	if(App.parties.length == 0 || App.advertisers.length == 0) return false;
+				// 	console.log("Ready");
 					this.generatePartyColorClasses();
-				}
+				// }
 
 				// Load suggestion engine datasets
 				App.suggestionDatasets.forEach(function(dataset,index) {
@@ -187,139 +320,6 @@ $(document).ready(function() {
 						len = len || 2;
 						var zeros = new Array(len).join('0');
 						return (zeros + str).slice(-len);
-					}
-				}
-			},
-			components: {
-				'party-span': {
-					template: "#party-span",
-					props: {
-						'party': Object,
-					  	'chars': {
-							type: Number,
-					  		default: 20
-						},
-						'advertiser': Object
-					}
-				},
-				'advertiser-table': {
-					template: "#advertiser-table",
-					props: {
-						'advertisers': Object,
-						'parties': Object,
-						'politicians': Object,
-						'suggestengine': Object,
-						'finished': {
-							default: false
-						}
-					},
-					methods: {
-						topparties: function(x) {
-							return this.parties[1].list.slice(0,x);
-						},
-						suggestParty: function(advertiser) {
-							var Component = this;
-
-							if(Component.suggestengine) {
-								console.log("Suggesting for "+advertiser.advertiser+", with "+Component.politicians.length+" possible matches")
-								var likelyParties = new Set();
-
-								var matchedEntities = Component.politicians.filter(function(candidate) {
-									return (
-										candidate.name == advertiser.advertiser
-										|| candidate.name.includes(advertiser.advertiser) // E.g. Jeremy Corbyn
-										|| advertiser.advertiser.includes(candidate.name) //  	and Jeremy Corbyn MP
-										|| (
-											candidate.facebook
-											&& candidate.facebook != ""
-											&& (
-												candidate.facebook.includes(advertiser.advertiser_id) // Might have a weird old one like https://www.facebook.com/Alan-Duncan-150454050066
-												|| (
-													advertiser.advertiser_vanity
-													&& advertiser.advertiser_vanity != ""
-													&& (
-														candidate.facebook.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
-														|| advertiser.advertiser_vanity.includes(candidate.facebook) // Newer profiles will use vanity url
-													)
-												)
-											)
-											|| (
-												candidate.facebook_vanity
-												&& candidate.facebook_vanity != ""
-
-												&&advertiser.advertiser_vanity
-												&& advertiser.advertiser_vanity != ""
-
-												&& (
-													candidate.facebook_vanity.includes(advertiser.advertiser_vanity) // Newer profiles will use vanity url
-													|| advertiser.advertiser_vanity.includes(candidate.facebook_vanity) // Newer profiles will use vanity url
-												)
-											)
-										)
-									)
-								});
-
-								if(matchedEntities.length && matchedEntities.length > 0) {
-									// console.log("Matches for "+advertiser.advertiser,matchedEntities)
-									matchedEntities.forEach(function(entity) {
-										likelyParties.add(entity.party.toLowerCase());
-									});
-								}
-
-								likelyParties = Array.from(likelyParties)
-
-								var parties = [];
-								likelyParties.forEach(function(likelyPartyID) {
-									Component.parties[1].list.forEach(function(checkParty) {
-										if(likelyPartyID == checkParty.id) parties.push(checkParty);
-									});
-								})
-								return parties;
-							} else {
-								return [];
-							}
-						},
-						touch: function(x,prop,$event = null) {
-							var Component = this;
-
-							if($event) {
-								// console.log("Listening for selection on",$($event.target))
-								$($event.target).change(() => {
-									// console.log("Clicked dropdown",$event.target);
-									$($event.target).off('change');
-									touchHappened()
-								});
-							} else touchHappened();
-
-							function touchHappened() {
-								// console.log("!!!!! I just clicked ",x.advertiser);
-								x.touchedDate = Date.now();
-								x.touchedProperty = prop;
-
-								if(x) {
-									// console.log("Touched "+x.touchedProperty+" on "+x.advertiser);
-									if(x.touchedProperty == 'political') {
-										if(x.political == 'true') {
-											// console.log("Nonpartisan "+x.advertiser)
-											x.affiliation = 'no-party';
-										} else {
-											// console.log("Clearing affil for "+x.advertiser)
-											x.affiliation = '';
-										}
-									} else if(x.touchedProperty == 'affiliation') {
-										if(x.affiliation != '') {
-											// console.log("Applying political to "+x.advertiser)
-											x.political = 'true';
-										} else {
-											// console.log("Clearing political for "+x.advertiser)
-											x.political = 'false';
-										}
-									}
-
-									Component.$forceUpdate();
-								}
-							}
-						}
 					}
 				}
 			}

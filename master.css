@@ -210,6 +210,4 @@ path.constituency {
 path.constituency:hover {
 	stroke-width: 2px;
 	stroke: red;
-	z-index: 999;
-	position: relative;
 }
