@@ -12,36 +12,74 @@
 	</div>
 	<main id='app' style='display: none;'>
 		<header style='max-width: 1140px;' class='center ph3 pv4'>
-			<a class='b f3 poppins dib fr mt2' href='categoriser.html'>Advertiser categoriser</a>
+			<!-- <a class='b f3 poppins dib fr mt2' href='categoriser.html'>Advertiser categoriser</a> -->
 			<div class='b f2 poppins'>Extension coverage</div>
 		</header>
 		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
-					<div class='fl w-70'>
+					<div class='fl w-50'>
 						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</div>
 						<div class='f4 mt0 gray'>
 							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
-					<div class='mt2 fr w-30 gray'>
-						<div class='tc' v-if='mapGenerated && selectedConstituency'>
-							<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
-							<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
+					<div id='map' class='mt2 fr w-50 gray relative'>
+						<div class='relative' id='constituencies' style='margin-top: -0'><svg></svg></div>
+						<div class='tr absolute' style='top: 30px; right: 30px;'>
+							<div v-if='mapGenerated && selectedConstituency'>
+								<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
+								<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
+								<div class='f5'>{{selectedConstituency.pop}} locals means {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
+								<hr>
+							</div>
+							<!-- <div v-if='mapGenerated && !selectedConstituency'>
+								<div class='f5 i'>Select a constituency<br>for user count</div>
+							</div> -->
+							<div class='f7'>
+								<label class='pointer'>
+									<input v-model='threshold' name='threshold' type='radio' value='0.1'>&nbsp;> 0 users
+								</label>
+								<br>
+								<label class='pointer'>
+									<input v-model='threshold' name='threshold' type='radio' value='10'>&nbsp;< 10 users
+								</label>
+								<br>
+								<label class='pointer'>
+									<input v-model='threshold' name='threshold' type='radio' :value='maxdownloads'>&nbsp;Least to Most users (full range)
+								</label>
+								<br>
+								<label class='pointer'>
+									<input v-model='threshold' name='threshold' type='radio' value='coverage'>&nbsp;Proportion of population
+								</label>
+							</div>
+							<span class='f7 gray'>Base map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 						</div>
-						<div class='tc' v-if='mapGenerated && !selectedConstituency'>
-							<div class='f5 i'>Click a constituency<br>for user count</div>
-						</div>
-						<div class='z-999 relative' id='constituencies'></div>
 					</div>
 				</div>
 				<div class='cf'></div>
 			</div>
 		</section>
+		<div style='max-width: 1140px;' class='center ph3 pv4 '>
+			<table class='tc center'>
+				<tr>
+					<th>Constituency</th>
+					<th>Volunteers</th>
+					<th>Population</th>
+					<th>% Volunteers / Population</th>
+				</tr>
+				<tr  v-if='list.length > 0' v-for='hex in list'>
+					<td class='tr'>{{hex.name}}</td>
+					<td :class="{'red b':hex.users == 0 }" class='f4'>{{hex.users}}</td>
+					<td :class="{'red b':hex.users == 0 }">{{hex.coverage.toFixed(6)}}%</td>
+					<td class='tl'>of <b>{{hex.pop}}</b> locals</td>
+				</tr>
+			</table>
+		</div>
 	</main>
 
-	<script src="uk.electionmap.d3.min.js"></script>
+	<script src="https://unpkg.com/topojson@3"></script>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>

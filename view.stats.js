@@ -15,7 +15,11 @@ $(document).ready(function() {
 			data: {
 				selectedConstituency: null,
 				mapGenerated: false,
-				demographics: demographics.data
+				demographics: demographics.data,
+				threshold: 10,
+				maxdownloads: 60,
+				maxcoverage: 0.0001,
+				geometries: []
 			},
 			mounted: function() {
 				var App = this;
@@ -32,21 +36,34 @@ $(document).ready(function() {
 				$( window ).resize(() => App.statistics() );
 				App.statistics()
 			},
+			watch: {
+				threshold: function() {
+					this.statistics();
+				}
+			},
+			computed: {
+				list: function() {
+					if(this.geometries.length == 0) return [];
+					return this.geometries;
+				}
+			},
 			methods: {
 				statistics: function() {
+					console.log("Generating vis");
+
 					var App = this;
 
 					vega.embed("#age", {
 						"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
 						"width": $("#age").width(),
-						"height": 350,
+						"height": 750,
 						"data": {
 							"values": App.demographics.age
 						},
 						"mark": "bar",
 						"encoding": {
-							"x": {"field": "age", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 } },
-							"y": {"field": "count", "type": "quantitative", "axis": { "domain": false, "title": "" } },
+							"y": {"field": "age", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 }, sort: "descending" },
+							"x": {"field": "count", "type": "quantitative", "axis": { "domain": false, "title": "" } },
 							"color": {
 							  "field": "x",
 							  "type": "nominal",
@@ -54,7 +71,7 @@ $(document).ready(function() {
 							  "legend": false
 							}
 						},
-						"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 11, "labelColor":"#777" } }
+						"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
 					}, {
 						"mode": "vega-lite",
 						"actions": false,
@@ -64,72 +81,108 @@ $(document).ready(function() {
 					}, function(error, result) {
 					});
 
-					if(App.mapGenerated == false) {
+					/////////
+
+					App.maxdownloads = Math.max.apply(Math,App.demographics.constituencies.map((o) => o.users))
+					var color_scale = d3.scaleLinear().domain([0,App.threshold == 'coverage' ? 0.00015 : App.threshold]).range(['#DDDDDD', '#4C78A8'])
+
+					var width = 480;
+					var height = 750;
+
+					var projection = d3.geoAlbers()
+						.center([0, 55.4])
+						.rotate([4.4, 0])
+						.parallels([50, 60])
+						.scale(1200 * 4)
+						.translate([width/4, height/2.5]);
+
+					var path = d3.geoPath()
+						.projection(projection)
+						.pointRadius(2);
+
+					var svg = d3.select('#constituencies svg')
+						.attr('width', width)
+						.attr('height', height);
+
+					function match(y) {
+						return App.demographics.constituencies.find((x)=>x.geoid==y.properties.constituency) || y.properties.name
+					}
+
+					if(App.mapGenerated == true) {
+						console.log("Changing colours")
+						// update colours
+						svg.selectAll('.constituency')
+							// .enter()
+							.attr("fill", function(d) {
+								return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
+							})
+					} else {
 						App.mapGenerated = true;
-						var UK_GENERAL_ELECTION_RESULTS_2010 = App.demographics.constituencies
 
-						// Credit to http://bl.ocks.org/timcraft/5866773 for this map
-						var base_color = '#2D4357'
-						var max_downloads = Math.max.apply(Math,UK_GENERAL_ELECTION_RESULTS_2010.map((o) => o.users))
-						var color_scale = d3.scaleLinear().domain([0,10]).range(['white', base_color])
+						d3.json("hexagons-topo.json", function(error, hexmap) {
+							d3.json("regions-topo.json", function(error, regionsmap) {
+								d3.csv("ons-age.csv", function(error, agedata) {
+									if (error) return console.error(error);
 
-						var svg = d3.select('#constituencies').append('svg')
-						.attr('width', $("#constituencies").outerWidth())
-						.attr('height', 400);
+									hexmap.objects.hexagons.geometries.forEach((hex,index) => {
+										if(!hexmap.objects.hexagons.geometries[index]) return false;
+										thisAgeRow = agedata.find((someConst)=>someConst.GEOID == hex.properties.constituency);
+										hexmap.objects.hexagons.geometries[index].properties.pop = thisAgeRow.PopTotalConstNum;
 
-						var map = UK.ElectionMap(4.8)
-						.fill(function(constituency) {
-							var thisConstituency = getConstituency(constituency);
-							return color_scale(typeof thisConstituency != 'string' ? thisConstituency.users : 0) || 'white';
-						})
-						.origin({x: 60, y: 390});
+										thisUserRow = match(hex);
+										hexmap.objects.hexagons.geometries[index].properties.users = typeof thisUserRow != 'string' ? thisUserRow.users : 0;
 
-						map(svg);
+										hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.pop
+									});
 
-						svg.on('click', function() {
-							more_info = d3.select("#more_info")
-							more_info.classed('hidden', true)
-							d3.select('#more_info_backup').classed('hidden', false)
-							more_info.select("#constituency_name").text("")
-							more_info.select("#download_count").text("")
-						})
+									App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
 
-						d3.selectAll(".constituency")
-						.append('title')
-						.text(function(constituency) {
-							var thisConstituency = getConstituency(constituency[2]);
-							return constituency[2] + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : constituency[2]);
-						})
-						d3.selectAll(".constituency").on('mouseover', function(constituency) {
-							App.selectedConstituency = getConstituency(constituency[2]);
-							d3.event.stopPropagation();
-						})
-					}
+									App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries
+										.map((g)=>g.properties)
+										.sort((a,b) => a.coverage - b.coverage)));
 
-					function getConstituency(constituencyName) {
-						var constituency = new Set(constituencyName.toLowerCase().replace(",","").split(" "));
+									var constituencies = topojson.feature(hexmap, hexmap.objects.hexagons);
 
-						var find = UK_GENERAL_ELECTION_RESULTS_2010.find((o) => {
-							var checkConstituency = new Set(o.name.toLowerCase().replace(",","").split(" "));
-							return eqSet(checkConstituency, constituency)
+									svg.append('g')
+										.attr('id','hex')
+										.selectAll(".constituency")
+									    .data(constituencies.features)
+									  	.enter().append("path")
+									    .attr("class", function(d) { return "constituency"; })
+									    .attr("id", function(d) { return d.properties.constituency; })
+									    .attr("d", path)
+										.attr("fill", function(d) {
+											return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
+										})
+										.append('title')
+										.text(function(constituency) {
+											var thisConstituency = match(constituency);
+											return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
+										})
+
+									var regions = topojson.feature(regionsmap, regionsmap.objects.regions);
+
+									svg.append('g')
+										.attr('id','regions')
+										.selectAll(".regions")
+									    .data(regions.features)
+									  	.enter().append("path")
+									    .attr("class", function(d) { return "region "+d.coordinates; })
+									    .attr("id", function(d) { return d.properties.name; })
+									    .attr("d", path);
+
+									d3.selectAll(".constituency").on('mouseover', function(d) {
+										// svg.selectAll("#hex path").sort(function (a, b) { // select the parent and sort the path's
+										// 	if (a.properties.constituency != d.properties.constituency) return -1;               // a is not the hovered element, send "a" to the back
+										// 	else return 1;                             // a is the hovered element, bring "a" to the front
+										// });
+										this.parentNode.appendChild(this);
+										App.selectedConstituency = d.properties
+										d3.event.stopPropagation();
+									})
+								});
+							});
 						});
-						if(!find) console.log(constituencyName);
-						return find || constituencyName;
-					}
-
-					function eqSet(as, bs) {
-					    return as.size === bs.size && all(isIn(bs), as);
-					}
-
-					function all(pred, as) {
-					    for (var a of as) if (!pred(a)) return false;
-					    return true;
-					}
-
-					function isIn(as) {
-					    return function (a) {
-					        return as.has(a);
-					    };
 					}
 				}
 			}

@@ -192,3 +192,24 @@ path { cursor: pointer; }
 .todo .advertiser-row:hover td.ui {
 	opacity: 1;
 }
+
+#constituencies svg line {
+    /*stroke-width:2;
+    stroke-opacity:1;
+    shape-rendering:crispEdges;
+    fill:none;*/
+}
+path.region {
+    stroke: white;
+	stroke-width: 1px;
+	fill: none;
+}
+path.constituency {
+    stroke: #AAA;
+}
+path.constituency:hover {
+	stroke-width: 2px;
+	stroke: red;
+	z-index: 999;
+	position: relative;
+}
