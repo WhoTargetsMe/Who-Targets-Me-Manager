@@ -1,3 +1,8 @@
+var orderBy = {
+	coverage: (a,b) => a.properties.coverage - b.properties.coverage,
+	partyShare: (a,b) => a.properties.first_party.share - b.properties.first_party.share
+}
+
 Vue.config.devtools = true
 
 $(document).ready(function() {
@@ -18,7 +23,8 @@ $(document).ready(function() {
 				geometries: [],
 				showEmpty: true,
 				parties: [],
-				coverageByParty: {}
+				coverageByParty: {},
+				orderBy: 'coverage'
 			},
 			mounted: function() {
 				var App = this;
@@ -41,6 +47,10 @@ $(document).ready(function() {
 				},
 				showEmpty: function() {
 					this.statistics();
+				},
+				orderBy: function() {
+					this.geometries = this.geometries.sort(orderBy[this.orderBy]);
+					// App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy[App.orderBy])));
 				}
 			},
 			computed: {
@@ -130,118 +140,141 @@ $(document).ready(function() {
 
 						d3.json("hexagons-topo.json", function(error, hexmap) {
 							d3.json("regions-topo.json", function(error, regionsmap) {
-								d3.csv("ons-age.csv", function(error, agedata) {
-									d3.csv("ge2015.csv", function(error, ge2015) {
-										d3.json("datasets/parties.json", function(error, parties) {
-											console.log("(Re)rendering map")
-											App.parties = parties;
-											App.generatePartyColorClasses();
+								d3.csv("ge2015.csv", function(error, ge2015) {
+									d3.json("datasets/parties.json", function(error, parties) {
+										console.log("(Re)rendering map")
+										App.parties = parties;
+										App.generatePartyColorClasses();
 
-											if (error) return console.error(error);
+										if (error) return console.error(error);
 
-											hexmap.objects.hexagons.geometries.forEach((hex,index) => {
-												if(!hexmap.objects.hexagons.geometries[index]) return false;
+										// Data for first, second parties
+										var p12 = ['first_party','second_party'];
 
-												// Population
-												thisAgeRow = agedata.find((someConst)=>someConst.GEOID == hex.properties.constituency);
-												hexmap.objects.hexagons.geometries[index].properties.pop = parseInt(thisAgeRow.PopTotalConstNum);
+										hexmap.objects.hexagons.geometries.forEach((hex,index) => {
+											// ons_id
+											// first_party
+											// second_party
+											if(!hexmap.objects.hexagons.geometries[index]) return false;
 
-												// Users
-												thisUserRow = match(hex);
-												hexmap.objects.hexagons.geometries[index].properties.users = parseInt(typeof thisUserRow != 'string' ? thisUserRow.users : 0);
+											// Electorate 2015
+											hexmap.objects.hexagons.geometries[index].properties.electorate = parseInt(ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency).electorate || 0);
 
-												// Coverage
-												hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.pop
+											// Users
+											thisUserRow = match(hex);
+											hexmap.objects.hexagons.geometries[index].properties.users = parseInt(typeof thisUserRow != 'string' ? thisUserRow.users : 0);
 
-												// Current party
-												this2015 = ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency);
-												hexmap.objects.hexagons.geometries[index].properties.party = this2015.party_name;
-												hexmap.objects.hexagons.geometries[index].properties.partyObj = parties[1].list.find((p)=> {
-													return p.name && this2015.party_name && (
-														p.name.includes(this2015.party_name) || this2015.party_name.includes(p.name)
+											// Coverage
+											hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.electorate
+
+											// Match constituency
+											this2015 = ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency);
+											if(!this2015) console.log("Couldn't match "+hex.properties.constituency)
+
+											p12.forEach(function(oneTwo) {
+												// This party
+												var thisParty = {};
+												thisParty.id = this2015[oneTwo];
+												thisParty.votes = parseInt(this2015[thisParty.id] || this2015.other);
+												thisParty.share = parseFloat(thisParty.votes / this2015.valid_votes);
+												Object.assign(thisParty,parties[1].list.find((p)=> {
+													var pID = p.id.toLowerCase();
+													var pName = p.name.toLowerCase();
+													var thisID = this2015[oneTwo.toLowerCase()].toLowerCase();
+													var x = (
+														thisID.includes(pID) ||
+														thisID.includes(pName) ||
+														pID.includes(thisID) ||
+														pName.includes(thisID)
 													);
-												});
-												hexmap.objects.hexagons.geometries[index].properties.partyid =
-												hexmap.objects.hexagons.geometries[index].properties.partyObj ?
-												hexmap.objects.hexagons.geometries[index].properties.partyObj.id : '';
-												hexmap.objects.hexagons.geometries[index].properties.share = parseFloat(this2015.share);
+													return x;
+												}));
+												if(!thisParty.name) {
+													thisParty.short_name = thisParty.id;
+													thisParty.name = thisParty.id;
+												}
 
-												// National volunteer coverage calculations
-												partyStats = hexmap.objects.hexagons.geometries.reduce(function(result, constituency) {
-													if (result[constituency.properties.party]) {
-														result[constituency.properties.party].volunteers += parseInt(constituency.properties.users);
-														result[constituency.properties.party].population += parseInt(constituency.properties.pop);
-														result[constituency.properties.party].coverage = result[constituency.properties.party].volunteers / result[constituency.properties.party].population;
-													} else {
-														result[constituency.properties.party] = {
-															name: constituency.properties.party,
-															id: constituency.properties.partyid,
-															volunteers: parseInt(constituency.properties.users),
-															population: parseInt(constituency.properties.pop),
-															coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.pop)
-														};
+												// Merge into hex object
+												hexmap.objects.hexagons.geometries[index].properties[oneTwo] = thisParty;
+											})
+										});
+										App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy[App.orderBy])));
+
+										p12.forEach(function(oneTwo) {
+											// National volunteer coverage calculations
+											var oneTwoPartyList = hexmap.objects.hexagons.geometries.reduce(function(result, constituency) {
+												if (result[constituency.properties[oneTwo].id]) {
+													// console.log("Adding to"+constituency.properties[oneTwo].id)
+													result[constituency.properties[oneTwo].id].volunteers += parseInt(constituency.properties.users);
+													result[constituency.properties[oneTwo].id].electorate += parseInt(constituency.properties.electorate);
+													result[constituency.properties[oneTwo].id].coverage = result[constituency.properties[oneTwo].id].volunteers / result[constituency.properties[oneTwo].id].electorate;
+												} else {
+													// console.log("Making ",constituency.properties[oneTwo].id)
+													result[constituency.properties[oneTwo].id] = {
+														id: constituency.properties[oneTwo].id,
+														volunteers: parseInt(constituency.properties.users),
+														electorate: parseInt(constituency.properties.electorate),
+														coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.electorate)
 													}
-													return result;
-												}, {});
+													Object.assign(result[constituency.properties[oneTwo].id],constituency.properties[oneTwo]);
+												}
+												return result;
+											}, {})
+											App.coverageByParty[oneTwo] = Object.keys(oneTwoPartyList).map(key => oneTwoPartyList[key]).sort((a,b)=>b.coverage-a.coverage);
+										});
 
-												App.coverageByParty = Object.keys(partyStats)
-																		.map(function(val) { return partyStats[val] })
-																		.sort((a,b)=>b.coverage-a.coverage);
-											});
-											nationalStats();
+										nationalStats();
 
-											App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
+										// Carry on...
 
-											App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries
-												.map((g)=>g.properties)
-												.sort((a,b) => a.coverage - b.coverage)));
+										App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
 
-											var constituencies = topojson.feature(hexmap, hexmap.objects.hexagons);
+										var constituencies = topojson.feature(hexmap, hexmap.objects.hexagons);
 
-											svg.append('g')
-												.attr('id','hex')
-												.selectAll(".constituency")
-											    .data(constituencies.features)
-											  	.enter().append("path")
-											    .attr("class", function(d) { return "constituency"; })
-											    .attr("id", function(d) { return d.properties.constituency; })
-											    .attr("d", path)
-												.attr("fill", function(d) {
-													return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
-												})
-												.append('title')
-												.text(function(constituency) {
-													var thisConstituency = match(constituency);
-													return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
-												})
-
-											var regions = topojson.feature(regionsmap, regionsmap.objects.regions);
-
-											svg.append('g')
-												.attr('id','regions')
-												.selectAll(".regions")
-											    .data(regions.features)
-											  	.enter().append("path")
-											    .attr("class", function(d) { return "region "+d.coordinates; })
-											    .attr("id", function(d) { return d.properties.name; })
-											    .attr("d", path);
-
-											d3.selectAll(".constituency").on('mouseover', function(d) {
-												// svg.selectAll("#hex path").sort(function (a, b) { // select the parent and sort the path's
-												// 	if (a.properties.constituency != d.properties.constituency) return -1;               // a is not the hovered element, send "a" to the back
-												// 	else return 1;                             // a is the hovered element, bring "a" to the front
-												// });
-												this.parentNode.appendChild(this);
-												App.selectedConstituency = d.properties
-												d3.event.stopPropagation();
+										svg.append('g')
+											.attr('id','hex')
+											.selectAll(".constituency")
+										    .data(constituencies.features)
+										  	.enter().append("path")
+										    .attr("class", function(d) { return "constituency"; })
+										    .attr("id", function(d) { return d.properties.constituency; })
+										    .attr("d", path)
+											.attr("fill", function(d) {
+												return color_scale(App.threshold == 'coverage' ? d.properties.coverage : d.properties.users);
+											})
+											.append('title')
+											.text(function(constituency) {
+												var thisConstituency = match(constituency);
+												return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
 											})
 
-											$("#loading").hide();
-											$("#app").show();
-											console.log("All loaded");
-											if(!App.mapGenerated) App.statistics()
-											App.mapGenerated = true;
-										});
+										var regions = topojson.feature(regionsmap, regionsmap.objects.regions);
+
+										svg.append('g')
+											.attr('id','regions')
+											.selectAll(".regions")
+										    .data(regions.features)
+										  	.enter().append("path")
+										    .attr("class", function(d) { return "region "+d.coordinates; })
+										    .attr("id", function(d) { return d.properties.name; })
+										    .attr("d", path);
+
+										d3.selectAll(".constituency").on('mouseover', function(d) {
+											this.parentNode.appendChild(this);
+											App.selectedConstituency = d.properties
+											d3.event.stopPropagation();
+										})
+
+										d3.selectAll(".constituency").on('mouseout', function(d) {
+											App.selectedConstituency = null
+											d3.event.stopPropagation();
+										})
+
+										$("#loading").hide();
+										$("#app").show();
+										console.log("All loaded");
+										if(!App.mapGenerated) App.statistics()
+										App.mapGenerated = true;
 									});
 								});
 							});
@@ -275,7 +308,7 @@ $(document).ready(function() {
 								"autosize": { "type": "fit", "resize": true }
 							}
 						}, function(error, result) {});
-						console.log("National stats",App.coverageByParty);
+
 						// vega.embed("#nationalcount", {
 						// 	"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
 						// 	"width": $("#national").width(),
