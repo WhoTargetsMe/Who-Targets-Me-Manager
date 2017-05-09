@@ -1,93 +1,97 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>Your Political Timeline - Who Targets Me?</title>
-	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
-	<link rel="stylesheet" type="text/css" href="master.css">
-	<link rel="shortcut icon" href="https://whotargets.me/wp-content/uploads/2017/04/logo-small-3.png" />
-	<style>
-	body {
-		font-family: "Lato"
-	}
-	.fb-embed {
-		background: white;
-		min-height: 200px;
-	}
-	</style>
-</head>
-<body style='background-color: #e9ebee; color: #1d2129;'>
-	<div id='fb-root'></div>
-	<script src="//connect.facebook.net/en_GB/sdk.js#xfbml=1&amp;version=v2.9"async></script>
 
-	<main style='width: 500px;' class='center' id='list'>
-		<header class='tc mt5 mb4'>
-			<div class='f2 b poppins'>Political timeline</div>
-			<div class='f4 b mid-gray'>Who's targeted you this election?</div>
-		</header>
+	<head>
+		<meta charset="utf-8">
+		<title>Your Political Timeline - Who Targets Me?</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="tachyons.min.css">
+		<link rel="stylesheet" type="text/css" href="master.css">
+		<link rel="shortcut icon" href="https://whotargets.me/wp-content/uploads/2017/04/logo-small-3.png" />
+		<style>
+			body {
+				font-family: "Lato"
+			}
 
-		<div v-for='day in adsByDay'>
-			<div class='f7 b mv3 gray tc ttu poppins'>{{day.date.toLocaleDateString('en-GB',{ weekday: 'long', month: 'short', day: '2-digit' })}}</div>
-			<div v-for='ad in day.ads' class='mb3'>
-				<div class="fb-embed">
-					<div class="fb-post"
-						:data-href="ad.posturl"
-						data-width="500"
-						data-show-text="true"></div>
-				</div>
-				<div class='tr'>
-					<a :href='ad.posturl' class='i silver f7 pr3'>See the ad on facebook</a>
+			.fb-embed {
+				background: white;
+				min-height: 200px;
+			}
+		</style>
+	</head>
+
+	<body style='background-color: #e9ebee; color: #1d2129;'>
+		<div id='fb-root'></div>
+		<script src="//connect.facebook.net/en_GB/sdk.js#xfbml=1&amp;version=v2.9" async></script>
+
+		<main style='width: 500px;' class='center' id='list'>
+			<header class='tc mt5 mb4'>
+				<div class='f2 b poppins'>Political timeline</div>
+				<div class='f4 b mid-gray'>Who's targeted you this election?</div>
+			</header>
+
+			<div v-for='day in adsByDay'>
+				<div class='f7 b mv3 gray tc ttu poppins'>{{day.date.toLocaleDateString('en-GB',{ weekday: 'long', month: 'short', day: '2-digit' })}}</div>
+				<div v-for='ad in day.ads' class='mb3'>
+					<div class="fb-embed">
+						<div class="fb-post" :data-href="ad.posturl" data-width="500" data-show-text="true"></div>
+					</div>
+					<div class='tr'>
+						<a :href='ad.posturl' class='i silver f7 pr3'>See the ad on facebook</a>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<a class='mt5 mb6 tc db' href="https://whotargets.me"><img src="https://whotargets.me/wp-content/uploads/2017/04/logo-small-3.png"></a>
-	</main>
+			<a class='mt5 mb6 tc db' href="https://whotargets.me"><img src="https://whotargets.me/wp-content/uploads/2017/04/logo-small-3.png"></a>
+		</main>
 
-	<script src="vue.min.js"></script>
-	<script>
-	var ads = [{ // Load from server as a per-user / party / national endpoint
-		entity_vanity: "labourparty",
-		top_level_post_id: "10154490741072411", // Must be a string, or JS rounding screws the number up
-		date_snapshot: 1494308926123
-	},{
-		entity_vanity: "conservatives",
-		top_level_post_id: "10154960444659279",
-		date_snapshot: 1494308926122
-	},{
-		entity_vanity: "conservatives",
-		top_level_post_id: "10154959906249279",
-		date_snapshot: 1494108926412
-	},{
-		entity_vanity: "libdems",
-		top_level_post_id: "10155319151993270",
-		date_snapshot: 1494208926141
-	}]
+		<script src="vue.min.js"></script>
+		<script>
+			var list = new Vue({
+				el: "#list",
+				data: {
+					adverts: [{ // Load from server as a per-user / party / national endpoint
+						entity_vanity: "labourparty",
+						top_level_post_id: "10154490741072411", // Must be a string, or JS rounding screws the number up
+						date_snapshot: 1494308926123
+					}, {
+						entity_vanity: "conservatives",
+						top_level_post_id: "10154960444659279",
+						date_snapshot: 1494308926122
+					}, {
+						entity_vanity: "conservatives",
+						top_level_post_id: "10154959906249279",
+						date_snapshot: 1494108926412
+					}, {
+						entity_vanity: "libdems",
+						top_level_post_id: "10155319151993270",
+						date_snapshot: 1494208926141
+					}]
+				},
+				computed: {
+					adsByDay: function() {
+						return this.adverts.reduce(function(acc, d) {
+								d.posturl = "https://www.facebook.com/" + d.entity_vanity + "/posts/" + d.top_level_post_id + "/";
+								console.log(d.posturl)
+								var p = new Date(d.date_snapshot)
+								if (!acc[0].hasOwnProperty(p)) acc[0][p] = [];
+								acc[0][p].push(d);
+								return acc;
+							}, [{}])
+							.reduce(function(acc, v) {
+								Object.keys(v).forEach(function(k) {
+									acc.push({
+										date: new Date(k),
+										ads: v[k]
+									})
+								});
+								return acc;
+							}, [])
+							.sort((a, b) => b.date - a.date);
+					}
+				}
+			})
+		</script>
+	</body>
 
-	var list = new Vue({
-		el: "#list",
-		data: {
-			adverts: ads
-		},
-		computed: {
-			adsByDay: function() {
-				return this.adverts.reduce(function(acc, d) {
-					d.posturl = "https://www.facebook.com/"+d.entity_vanity+"/posts/"+d.top_level_post_id+"/";
-					console.log(d.posturl)
-					var p = new Date(d.date_snapshot)
-					if (!acc[0].hasOwnProperty(p)) acc[0][p] = [];
-					acc[0][p].push(d);
-					return acc;
-				},[{}])
-				.reduce(function(acc, v){
-					Object.keys(v).forEach(function(k){acc.push({date:new Date(k), ads:v[k]})});
-					return acc;
-				},[])
-				.sort((a,b)=>b.date-a.date);
-			}
-		}
-	})
-	</script>
-</body>
 </html>
