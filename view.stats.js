@@ -26,6 +26,8 @@ $(document).ready(function() {
 				selectedConstituency: null,
 				mapGenerated: false,
 				demographics: demographics.data,
+				userCount: 0,
+				avgAge: 0,
 				threshold: 10,
 				maxdownloads: 60,
 				maxcoverage: 0.0001,
@@ -46,6 +48,8 @@ $(document).ready(function() {
 					if(ages[i] == undefined) ages[i] = { age: i, count: 0 }
 				}
 				App.demographics.age = ages.slice(13,91);
+				App.userCount = App.demographics.gender[0].count + App.demographics.gender[1].count + App.demographics.gender[2].count;
+				App.avgAge = App.demographics.age.reduce((sum,next,thisAge)=>sum+=(next.count*(thisAge+13)),0) / App.userCount;
 
 				$( window ).resize(() => App.statistics() );
 				App.statistics()
@@ -77,7 +81,7 @@ $(document).ready(function() {
 					vega.embed("#age", {
 						"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
 						"width": $("#age").width(),
-						"height": 750,
+						"height": 700,
 						"data": {
 							"values": App.demographics.age
 						},
@@ -95,6 +99,7 @@ $(document).ready(function() {
 						"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
 					}, {
 						"mode": "vega-lite",
+						"renderer": "svg",
 						"actions": false,
 						"config": {
 							"autosize": { "type": "fit", "resize": true }
@@ -232,8 +237,6 @@ $(document).ready(function() {
 											App.coverageByParty[oneTwo] = Object.keys(oneTwoPartyList).map(key => oneTwoPartyList[key]).sort((a,b)=>b.coverage-a.coverage);
 										});
 
-										nationalStats();
-
 										// Carry on...
 
 										App.maxcoverage = Math.max.apply(Math,hexmap.objects.hexagons.geometries.map((o) => o.properties.coverage))
@@ -288,61 +291,6 @@ $(document).ready(function() {
 								});
 							});
 						});
-					}
-
-					function nationalStats() {
-						console.log("National stats",App.coverageByParty);
-						vega.embed("#nationalproportion", {
-							"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-							"width": $("#national").width(),
-							"height": 200,
-							"data": {
-								"values": App.coverageByParty
-							},
-							"mark": "bar",
-							"encoding": {
-								"x": {"field": "name", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 }, sort: "descending" },
-								"y": {"field": "coverage", "type": "quantitative", "axis": { "domain": false, "title": "% (0.0000) coverage" } },
-								"color": {
-								  "field": "x",
-								  "type": "nominal",
-								  "legend": false
-								}
-							},
-							"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
-						}, {
-							"mode": "vega-lite",
-							"actions": false,
-							"config": {
-								"autosize": { "type": "fit", "resize": true }
-							}
-						}, function(error, result) {});
-
-						// vega.embed("#nationalcount", {
-						// 	"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-						// 	"width": $("#national").width(),
-						// 	"height": 100,
-						// 	"data": {
-						// 		"values": App.coverageByParty
-						// 	},
-						// 	"mark": "bar",
-						// 	"encoding": {
-						// 		"x": {"field": "name", "type": "nominal", "axis": { "domain": false, "title": "", "labelPadding": 10 }, sort: "descending" },
-						// 		"y": {"field": "volunteers", "type": "quantitative", "axis": { "domain": false, "title": "Volunteers by party constituency" } },
-						// 		"color": {
-						// 		  "field": "x",
-						// 		  "type": "nominal",
-						// 		  "legend": false
-						// 		}
-						// 	},
-						// 	"config": { "axis": { "labelFont": "lato", "ticks": false, "labelFontSize": 10, "labelColor":"#777" } }
-						// }, {
-						// 	"mode": "vega-lite",
-						// 	"actions": false,
-						// 	"config": {
-						// 		"autosize": { "type": "fit", "resize": true }
-						// 	}
-						// }, function(error, result) {});
 					}
 				},
 				generatePartyColorClasses: function() {

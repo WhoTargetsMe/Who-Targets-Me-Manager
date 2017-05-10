@@ -26,11 +26,12 @@
 		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
-					<div class='fl w-50' v-once>
-						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count|d}} users</div>
+					<div class='fl w-50'>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users</div>
 						<div class='f4 mt0 gray'>
-							<span v-for='(d,gender) in demographics.gender'>{{d.count|d}} <span class='f6'>({{d.count/(demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count)|%}})</span> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
+							<span v-for='(d,gender) in demographics.gender'>{{d.count|d}} <span class='f6'>({{d.count/(userCount)|%}})</span> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
+						<div class='f4 mt0 gray'>{{avgAge|d(0)}} average age</div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
 					<div id='map' class='fr w-50 relative'>
