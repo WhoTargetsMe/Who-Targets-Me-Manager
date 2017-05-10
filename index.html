@@ -6,6 +6,13 @@
 	<link rel="stylesheet" type="text/css" href="tachyons.min.css">
 	<link rel="stylesheet" type="text/css" href="master.css">
 	<link rel="shortcut icon" href="https://whotargets.me/wp-content/uploads/2017/04/logo-small-3.png" />
+	<style>
+	@media screen and (min-width: 1180px) {
+		#constituencies svg {
+			margin-left: 70px;
+		}
+	}
+	</style>
 </head>
 <body class='pv5'>
 	<div id='loading' class='measure center tc' style="width: 400px">
@@ -31,23 +38,6 @@
 						<div class='relative gray'>
 							<div class='relative' id='constituencies'><svg></svg></div>
 							<div class='tr absolute top-2 right-0'>
-								<div v-if='mapGenerated && selectedConstituency' class='mid-gray'>
-									<hr>
-									<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
-									<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
-									<div class='f5'>{{selectedConstituency.electorate}} electorate, {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
-									<br>
-									<div class='f7 fl w-30 tl gray b'>2015 GE</div>
-									<div class='f5 fr w-70'>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{(selectedConstituency.first_party.share * 100).toFixed(2)}}%</b></div>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{(selectedConstituency.second_party.share * 100).toFixed(2)}}%</b></div>
-									</div>
-									<div class='cf'></div>
-									<hr>
-								</div>
-								<!-- <div v-if='mapGenerated && !selectedConstituency'>
-									<div class='f5 i'>Select a constituency<br>for user count</div>
-								</div> -->
 								<div class='f7'>
 									<div class='b'>Colour scheme</div>
 									<label class='pointer'>
@@ -72,9 +62,21 @@
 										Highlight no users&nbsp;<input class='pointer' v-model='showEmpty' name='showEmpty' type='checkbox' />
 									</label>
 								</div>
-								<br>
-								<span class='f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
+								<div v-if='mapGenerated && selectedConstituency' class='mid-gray'>
+									<hr>
+									<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
+									<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
+									<div class='f5'>{{selectedConstituency.electorate}} electorate, {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
+									<br>
+									<div class='f7 fl w-30 tl gray b'>2015 GE</div>
+									<div class='f5 fr w-70'>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{(selectedConstituency.first_party.share * 100).toFixed(2)}}%</b></div>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{(selectedConstituency.second_party.share * 100).toFixed(2)}}%</b></div>
+									</div>
+									<div class='cf'></div>
+								</div>
 							</div>
+							<span class='tr absolute bottom-0 right-0 f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 						</div>
 					</div>
 				</div>
