@@ -20,7 +20,7 @@ var list = new Vue({
 		}]
 	},
 	computed: {
-		adsByDay: function() {
+		adsByDay: function() { // Group adverts received by day, according to `date_snapshot` (time seen by user)
 			return this.adverts.reduce(function(acc, d) {
 					d.posturl = "https://www.facebook.com/" + d.entity_vanity + "/posts/" + d.top_level_post_id + "/";
 					console.log(d.posturl)
@@ -38,7 +38,7 @@ var list = new Vue({
 					});
 					return acc;
 				}, [])
-				.sort((a, b) => b.date - a.date);
+				.sort((a, b) => b.date - a.date); // Most recent first
 		}
 	}
 })

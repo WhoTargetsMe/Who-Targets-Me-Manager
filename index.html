@@ -26,51 +26,55 @@
 						</div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
-					<div id='map' class='mt2 fr w-50 gray relative'>
-						<div class='relative' id='constituencies' style='margin-top: -0'><svg></svg></div>
-						<div class='tr absolute' style='top: 30px; right: 30px;'>
-							<div v-if='mapGenerated && selectedConstituency' class='mid-gray'>
-								<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
-								<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
-								<div class='f5'>{{selectedConstituency.electorate}} electorate, {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
-								<hr>
-								<div class='f7 fl w-30 tl gray b'>2015 GE</div>
-								<div class='f5 fr w-70'>
-									<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{(selectedConstituency.first_party.share * 100).toFixed(2)}}%</b></div>
-									<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{(selectedConstituency.second_party.share * 100).toFixed(2)}}%</b></div>
+					<div id='map' class='fr w-50 relative'>
+						<div v-if='mapGenerated' class='f3 b mid-gray poppins tr mt2'>Users in <span class='f2'>{{list.filter((o)=>o.properties.users > 0).length}}</span>/{{list.length}} constituencies</div>
+						<div class='relative gray'>
+							<div class='relative' id='constituencies'><svg></svg></div>
+							<div class='tr absolute top-2 right-0'>
+								<div v-if='mapGenerated && selectedConstituency' class='mid-gray'>
+									<hr>
+									<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
+									<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
+									<div class='f5'>{{selectedConstituency.electorate}} electorate, {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
+									<br>
+									<div class='f7 fl w-30 tl gray b'>2015 GE</div>
+									<div class='f5 fr w-70'>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{(selectedConstituency.first_party.share * 100).toFixed(2)}}%</b></div>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{(selectedConstituency.second_party.share * 100).toFixed(2)}}%</b></div>
+									</div>
+									<div class='cf'></div>
+									<hr>
 								</div>
-								<div class='cf'></div>
-								<hr>
+								<!-- <div v-if='mapGenerated && !selectedConstituency'>
+									<div class='f5 i'>Select a constituency<br>for user count</div>
+								</div> -->
+								<div class='f7'>
+									<div class='b'>Colour scheme</div>
+									<label class='pointer'>
+										> 0 users&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='0.1' />
+									</label>
+									<br>
+									<label class='pointer'>
+										> 10 users&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='10' />
+									</label>
+									<br>
+									<label class='pointer'>
+										Least to Most users (full range)&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' :value='maxdownloads' />
+									</label>
+									<br>
+									<label class='pointer'>
+										Proportion of electorate&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='coverage' />
+									</label>
+									<br>
+									<br>
+									<div class='b'>Options</div>
+									<label class='pointer'>
+										Highlight no users&nbsp;<input class='pointer' v-model='showEmpty' name='showEmpty' type='checkbox' />
+									</label>
+								</div>
+								<br>
+								<span class='f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 							</div>
-							<!-- <div v-if='mapGenerated && !selectedConstituency'>
-								<div class='f5 i'>Select a constituency<br>for user count</div>
-							</div> -->
-							<div class='f7'>
-								<div class='b'>Colour scheme</div>
-								<label class='pointer'>
-									> 0 users&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='0.1' />
-								</label>
-								<br>
-								<label class='pointer'>
-									> 10 users&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='10' />
-								</label>
-								<br>
-								<label class='pointer'>
-									Least to Most users (full range)&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' :value='maxdownloads' />
-								</label>
-								<br>
-								<label class='pointer'>
-									Proportion of electorate&nbsp;<input class='pointer' v-model='threshold' name='threshold' type='radio' value='coverage' />
-								</label>
-								<br>
-								<br>
-								<div class='b'>Options</div>
-								<label class='pointer'>
-									Highlight no users&nbsp;<input class='pointer' v-model='showEmpty' name='showEmpty' type='checkbox' />
-								</label>
-							</div>
-							<br>
-							<span class='f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 						</div>
 					</div>
 				</div>
