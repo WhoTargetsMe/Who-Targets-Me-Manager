@@ -1,15 +1,24 @@
+Vue.config.devtools = true
+
 var orderBy = {
 	coverage: (a,b) => a.properties.coverage - b.properties.coverage,
 	partyShare: (a,b) => a.properties.first_party.share - b.properties.first_party.share
 }
-
-Vue.config.devtools = true
 
 $(document).ready(function() {
 	$("#loading").show();
 	$("#app").hide();
 
 	$.getJSON("https://who-targets-me.herokuapp.com/demographics/", function(demographics) {
+
+		Vue.filter('d', function (value,x = 0) {
+			var commaFormat = new Intl.NumberFormat('en-GB', {minimumFractionDigits: x, maximumFractionDigits: x});
+		    return commaFormat.format(value);
+		});
+
+		Vue.filter('%', function (value,x = 0) {
+		    return (value*100).toFixed(x)+"%"
+		});
 
 		var App = new Vue({
 			el: '#app',

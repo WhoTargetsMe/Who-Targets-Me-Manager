@@ -26,10 +26,10 @@
 		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
-					<div class='fl w-50'>
-						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count}} users</div>
+					<div class='fl w-50' v-once>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count|d}} users</div>
 						<div class='f4 mt0 gray'>
-							<span v-for='(d,gender) in demographics.gender'>{{d.count}} {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
+							<span v-for='(d,gender) in demographics.gender'>{{d.count|d}} <span class='f6'>({{d.count/(demographics.gender[0].count+demographics.gender[1].count+demographics.gender[2].count)|%}})</span> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
@@ -65,13 +65,13 @@
 								<div v-if='mapGenerated && selectedConstituency' class='mid-gray'>
 									<hr>
 									<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
-									<div class='f5'>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users}} volunteers</div>
-									<div class='f5'>{{selectedConstituency.electorate}} electorate, {{selectedConstituency.coverage.toFixed(5)}}% coverage</div>
+									<div class='f5'><b>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users|d}}</b> volunteers</div>
+									<div class='f5'>{{selectedConstituency.electorate|d}} electorate, <b>{{selectedConstituency.coverage|%(4)}}</b> coverage</div>
 									<br>
 									<div class='f7 fl w-30 tl gray b'>2015 GE</div>
 									<div class='f5 fr w-70'>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{(selectedConstituency.first_party.share * 100).toFixed(2)}}%</b></div>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{(selectedConstituency.second_party.share * 100).toFixed(2)}}%</b></div>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{selectedConstituency.first_party.share|%}}</b></div>
+										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{selectedConstituency.second_party.share|%}}</b></div>
 									</div>
 									<div class='cf'></div>
 								</div>
@@ -83,16 +83,16 @@
 				<div class='cf'></div>
 			</div>
 		</section>
-		<div style='max-width: 1140px;' class='center ph3 pv4 '>
+		<div style='max-width: 1140px;' class='center ph3 pv4'>
 			<div class='center w-50 fl' v-for='(rank,rankName) in coverageByParty'>
 				<div class='f5 b tc poppins'>Coverage by constituency's {{rankName=='first_party' ? "first" : "second"}} party</div>
 				<br>
 				<table v-if='coverageByParty'>
 					<tr v-for='party in rank'>
 						<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
-						<td><b>{{party.volunteers}}</b> volunteers</td>
-						<td><b>{{party.coverage.toFixed(6)}}%</b></td>
-						<td>of <b>{{party.electorate}}</b> {{rankName=='first_party' ? "controlled" : "contested"}} pax</td>
+						<td><b>{{party.volunteers|d}}</b> volunteers</td>
+						<td><b>{{party.coverage|%(4)}}</b></td>
+						<td>of <b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "controlled" : "contested"}} pax</td>
 					</tr>
 				</table>
 			</div>
@@ -100,23 +100,23 @@
 			<br><br>
 			<hr>
 			<br>
-			<h3 class='poppins'>Constituency party coverage</h3>
-			<label class='pointer'>
+			<h3 class='poppins tc'>Constituency party coverage</h3>
+			<!-- <label class='pointer'>
 				Order by coverage&nbsp;<input class='pointer' v-model='orderBy' name='orderBy' type='radio' value='coverage' />
 			</label>
 			<br>
 			<label class='pointer'>
 				Order by first party share&nbsp;<input class='pointer' v-model='orderBy' name='orderBy' type='radio' value='partyShare' />
 			</label>
-			<br>
-			<table class='tc center f6' v-if='list.length > 0'>
+			<br> -->
+			<table class='tc center f6' v-if='list.length > 0' v-once>
 				<tr v-for='hex in list'>
 					<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
-					<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users}}</span> volunteers &nbsp;-</td>
-					<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage.toFixed(6)}}%</td>
-					<td class='tl'>of {{hex.properties.electorate}} electorate</td>
-					<td class='tl'>2015: <b>{{(hex.properties.first_party.share * 100).toFixed(2)}}%</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
-					<td class='tl'><b>{{(hex.properties.second_party.share * 100).toFixed(2)}}%</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
+					<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
+					<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
+					<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
+					<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
+					<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
 				</tr>
 			</table>
 		</div>
