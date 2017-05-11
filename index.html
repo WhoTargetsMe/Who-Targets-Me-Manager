@@ -12,15 +12,9 @@
 			margin-left: 70px;
 		}
 	}
-	/*.leave:after {
-		content: ": leaver"
-	}*/
 	.leave {
 		background: lightblue;
 	}
-	/*.remain:after {
-		content: ": remainer"
-	}*/
 	.remain {
 		background: yellow;
 	}
@@ -87,12 +81,13 @@
 										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{selectedConstituency.second_party.share|%}}</b></div>
 									</div>
 									<div class='cf'></div>
-									<!-- <div class='f7 fl w-40 tl gray b'></div>
-									<div class='f7 fl w-30 tl gray b'>2016 BREXIT</div>
-									<div class='f6 fr w-30'>
-										<span class='tc pa1' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'><b>{{selectedConstituency.brexit|%(1)}}</b> Brexit vote</span>
+									<div class='fr w-80 mt1'>
+										<div class='f7 fl w-50 tl gray b f7 lh-copy ph1 dib v-mid'>2016 BREXIT</div>
+										<div class='f6 fr w-50'>
+											<span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'>{{selectedConstituency.brexit > 0.5 ? "Brexit" : "Remain"}} - <b>{{selectedConstituency.brexit|%(1)}}</b></span>
+										</div>
 									</div>
-									<div class='cf'></div> -->
+									<div class='cf'></div>
 								</div>
 							</div>
 							<span class='tr absolute bottom-0 right-0 f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
@@ -103,6 +98,14 @@
 			</div>
 		</section>
 		<div style='max-width: 1140px;' class='center ph3 pv4'>
+			<div class='center'>
+				<div class='f5 b tc poppins'>Our users' mean Brexit 'Leave' vote</div>
+				<div class='f1 b tc'>{{brexitCoverage|%(2)}}</div>
+				<div class='f6 i gray tc'>Mean average of constituency's Brexit share / user-constituents</div>
+			</div>
+
+			<br><hr><br>
+
 			<div class='center w-50 fl' v-for='(rank,rankName) in coverageByParty'>
 				<div class='f5 b tc poppins'>Coverage by constituency's {{rankName=='first_party' ? "first" : "second"}} party</div>
 				<br>
@@ -116,29 +119,23 @@
 				</table>
 			</div>
 			<div class='cf'></div>
-			<br><br>
-			<hr>
-			<br>
-			<h3 class='poppins tc'>Constituency party coverage</h3>
-			<!-- <label class='pointer'>
-				Order by coverage&nbsp;<input class='pointer' v-model='orderBy' name='orderBy' type='radio' value='coverage' />
-			</label>
-			<br>
-			<label class='pointer'>
-				Order by first party share&nbsp;<input class='pointer' v-model='orderBy' name='orderBy' type='radio' value='partyShare' />
-			</label>
-			<br> -->
-			<table class='tc center f6' v-if='list.length > 0' v-once>
-				<tr v-for='hex in list'>
-					<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
-					<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
-					<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
-					<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
-					<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
-					<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
-					<td class='tc pa1' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'><b>{{hex.properties.brexit|%(1)}}</b> Brexit vote</td>
-				</tr>
-			</table>
+
+			<br><hr><br>
+
+			<div class='center'>
+				<h3 class='poppins tc'>Constituency party coverage</h3>
+				<table class='tc center f6' v-if='list.length > 0' v-once>
+					<tr v-for='hex in list'>
+						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
+						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
+						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
+						<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
+						<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
+						<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
+						<td class='tl pv1 ph2 br1' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'><b>{{hex.properties.brexit|%(1)}}</b> - {{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</main>
 

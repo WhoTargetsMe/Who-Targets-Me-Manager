@@ -28,6 +28,7 @@ $(document).ready(function() {
 				demographics: demographics.data,
 				userCount: 0,
 				avgAge: 0,
+				brexitCoverage: 0,
 				threshold: 10,
 				maxdownloads: 60,
 				maxcoverage: 0.0001,
@@ -154,7 +155,7 @@ $(document).ready(function() {
 
 						d3.json("hexagons-topo.json", function(error, hexmap) {
 							d3.json("regions-topo.json", function(error, regionsmap) {
-								d3.csv("ge2015.csv", function(error, ge2015) {
+								d3.csv("constituencyVotes.csv", function(error, ge2015) {
 									d3.json("datasets/parties.json", function(error, parties) {
 										console.log("(Re)rendering map")
 										App.parties = parties;
@@ -235,6 +236,11 @@ $(document).ready(function() {
 											}, {})
 											App.coverageByParty[oneTwo] = Object.keys(oneTwoPartyList).map(key => oneTwoPartyList[key]).sort((a,b)=>b.coverage-a.coverage);
 										});
+
+										// National brexit coverage
+										// App.brexitCoverage = hexmap.objects.hexagons.geometries.reduce((sum, cons) => cons.properties.share*cons.properties.users) / App.userCount;
+
+										App.brexitCoverage = hexmap.objects.hexagons.geometries.reduce((sum,cons)=>sum += cons.properties.brexit * cons.properties.users,0) / App.userCount;
 
 										// Carry on...
 
