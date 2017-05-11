@@ -75,16 +75,18 @@
 									<div class='f5'><b>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users|d}}</b> volunteers</div>
 									<div class='f5'>{{selectedConstituency.electorate|d}} electorate, <b>{{selectedConstituency.coverage|%(4)}}</b> coverage</div>
 									<br>
-									<div class='f7 fl w-30 tl gray b'>2015 GE</div>
-									<div class='f5 fr w-70'>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{selectedConstituency.first_party.share|%}}</b></div>
-										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{selectedConstituency.second_party.share|%}}</b></div>
+									<div class='fr w-80 mt2'>
+										<div class='f7 fl w-30 tl gray b pt1 dib v-mid'>2015 GE</div>
+										<div class='f5 fr w-70'>
+											<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.first_party.id'>{{selectedConstituency.first_party.short_name}}</span> <b>{{selectedConstituency.first_party.share|%}}</b></div>
+											<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{selectedConstituency.second_party.share|%}}</b></div>
+										</div>
 									</div>
 									<div class='cf'></div>
-									<div class='fr w-80 mt1'>
-										<div class='f7 fl w-50 tl gray b f7 lh-copy ph1 dib v-mid'>2016 BREXIT</div>
-										<div class='f6 fr w-50'>
-											<span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'>{{selectedConstituency.brexit > 0.5 ? "Brexit" : "Remain"}} - <b>{{selectedConstituency.brexit|%(1)}}</b></span>
+									<div class='fr w-80 mt2'>
+										<div class='f7 fl w-50 tl gray b f7 pt1 dib v-mid'>2016 EU REF</div>
+										<div class='f5 fr w-50'>
+											<span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'>{{selectedConstituency.brexit > 0.5 ? "Brexit" : "Remain"}}</span> <b>{{selectedConstituency.brexit|%}}</b>
 										</div>
 									</div>
 									<div class='cf'></div>
@@ -132,7 +134,7 @@
 						<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
 						<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
-						<td class='tl pv1 ph2 br1' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'><b>{{hex.properties.brexit|%(1)}}</b> - {{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</td>
+						<td class='tl'><b>{{hex.properties.brexit|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'>{{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</span></td>
 					</tr>
 				</table>
 			</div>
