@@ -166,13 +166,16 @@ $(document).ready(function() {
 										var p12 = ['first_party','second_party'];
 
 										hexmap.objects.hexagons.geometries.forEach((hex,index) => {
-											// ons_id
-											// first_party
-											// second_party
 											if(!hexmap.objects.hexagons.geometries[index]) return false;
+											// Match constituency
+											this2015 = ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency);
+											if(!this2015) console.log("Couldn't match "+hex.properties.constituency)
+
+											// Brexit vote
+											hexmap.objects.hexagons.geometries[index].properties.brexit = parseFloat(this2015.leaveshare || 0);
 
 											// Electorate 2015
-											hexmap.objects.hexagons.geometries[index].properties.electorate = parseInt(ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency).electorate || 0);
+											hexmap.objects.hexagons.geometries[index].properties.electorate = parseInt(this2015.electorate || 0);
 
 											// Users
 											thisUserRow = match(hex);
@@ -180,10 +183,6 @@ $(document).ready(function() {
 
 											// Coverage
 											hexmap.objects.hexagons.geometries[index].properties.coverage = hexmap.objects.hexagons.geometries[index].properties.users / hexmap.objects.hexagons.geometries[index].properties.electorate
-
-											// Match constituency
-											this2015 = ge2015.find((someConst)=>someConst.ons_id == hex.properties.constituency);
-											if(!this2015) console.log("Couldn't match "+hex.properties.constituency)
 
 											p12.forEach(function(oneTwo) {
 												// This party

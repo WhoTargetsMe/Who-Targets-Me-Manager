@@ -12,6 +12,18 @@
 			margin-left: 70px;
 		}
 	}
+	/*.leave:after {
+		content: ": leaver"
+	}*/
+	.leave {
+		background: lightblue;
+	}
+	/*.remain:after {
+		content: ": remainer"
+	}*/
+	.remain {
+		background: yellow;
+	}
 	</style>
 </head>
 <body class='pv5'>
@@ -75,6 +87,12 @@
 										<div class='f5'><span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+selectedConstituency.second_party.id'>{{selectedConstituency.second_party.short_name}}</span> <b>{{selectedConstituency.second_party.share|%}}</b></div>
 									</div>
 									<div class='cf'></div>
+									<!-- <div class='f7 fl w-40 tl gray b'></div>
+									<div class='f7 fl w-30 tl gray b'>2016 BREXIT</div>
+									<div class='f6 fr w-30'>
+										<span class='tc pa1' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'><b>{{selectedConstituency.brexit|%(1)}}</b> Brexit vote</span>
+									</div>
+									<div class='cf'></div> -->
 								</div>
 							</div>
 							<span class='tr absolute bottom-0 right-0 f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
@@ -118,6 +136,7 @@
 					<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
 					<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
 					<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
+					<td class='tc pa1' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'><b>{{hex.properties.brexit|%(1)}}</b> Brexit vote</td>
 				</tr>
 			</table>
 		</div>
