@@ -1,8 +1,24 @@
 Vue.config.devtools = true
 
 var orderBy = {
+	users: (a,b) => a.properties.users - b.properties.users,
 	coverage: (a,b) => a.properties.coverage - b.properties.coverage,
-	partyShare: (a,b) => a.properties.first_party.share - b.properties.first_party.share
+	electorate: (a,b) =>  a.properties.electorate - b.properties.electorate,
+	first_party_share: (a,b) =>  a.properties.first_party.share - b.properties.first_party.share,
+	second_party_share: (b,a) =>  a.properties.second_party.share - b.properties.second_party.share,
+	first_party: (a,b) =>  {
+		var nameA=a.properties.first_party.name.toLowerCase(), nameB=b.properties.first_party.name.toLowerCase();
+		if (nameA < nameB) return -1;
+		if (nameA > nameB) return 1;
+		return 0;
+	},
+	second_party: (a,b) =>  {
+		var nameA=a.properties.second_party.name.toLowerCase(), nameB=b.properties.second_party.name.toLowerCase();
+		if (nameA < nameB) return -1;
+		if (nameA > nameB) return 1;
+		return 0;
+	},
+	brexit: (b,a) =>  a.properties.brexit - b.properties.brexit
 }
 
 $(document).ready(function() {
@@ -64,16 +80,13 @@ $(document).ready(function() {
 				},
 				orderBy: function() {
 					this.geometries = this.geometries.sort(orderBy[this.orderBy]);
-					// App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy[App.orderBy])));
-				}
-			},
-			computed: {
-				list: function() {
-					if(this.geometries.length == 0) return [];
-					return this.geometries;
 				}
 			},
 			methods: {
+				orderTable: function(x) {
+					this.orderBy = x;
+					this.geometries = this.geometries.sort(orderBy[this.orderBy]);
+				},
 				statistics: function() {
 					console.log("Generating vis");
 
@@ -278,13 +291,7 @@ $(document).ready(function() {
 
 										d3.selectAll(".constituency").on('mouseover', function(d) {
 											this.parentNode.appendChild(this);
-											App.selectedConstituency = d.properties
-											d3.event.stopPropagation();
-										})
-
-										d3.selectAll(".constituency").on('mouseout', function(d) {
-											App.selectedConstituency = null
-											d3.event.stopPropagation();
+											App.selectedConstituency = JSON.parse(JSON.stringify(d.properties));
 										})
 
 										$("#loading").hide();

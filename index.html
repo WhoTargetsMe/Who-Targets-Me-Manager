@@ -41,7 +41,7 @@
 						<div class='z-0 relative' id='age'></div>
 					</div>
 					<div id='map' class='fr w-50 relative'>
-						<div v-if='mapGenerated' class='f3 b mid-gray poppins tr mt2'>Users in <span class='f2'>{{list.filter((o)=>o.properties.users > 0).length}}</span>/{{list.length}} constituencies</div>
+						<div v-if='mapGenerated' class='f3 b mid-gray poppins tr mt2'>Users in <span class='f2'>{{geometries.filter((o)=>o.properties.users > 0).length}}</span>/{{geometries.length}} constituencies</div>
 						<div class='relative gray'>
 							<div class='relative z-999' id='constituencies'><svg></svg></div>
 							<div class='tr absolute top-2 right-0 z-1'>
@@ -125,9 +125,23 @@
 			<br><hr><br>
 
 			<div class='center'>
-				<h3 class='poppins tc'>Constituency party coverage</h3>
-				<table class='tc center f6' v-if='list.length > 0' v-once>
-					<tr v-for='hex in list'>
+				<h3 class='poppins tc mb0'>Constituency party coverage</h3>
+				<div class='f6 i gray tc mb3'>Click a header to order by that column</div>
+
+				<table class='tc center f6' v-if='geometries.length > 0'>
+					<tr>
+						<td></td>
+						<td class='pointer b' @click='orderTable("users")'>User count</td>
+						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
+						<td class='pointer b' @click='orderTable("electorate")'>Electorate</td>
+						<td><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
+						<td><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
+						<td class='pointer b' @click='orderTable("brexit")'>% leave vote</td>
+					</tr>
+					<tr>
+						<td colspan=7>&nbsp;</td>
+					</tr>
+					<tr v-for='hex in geometries'>
 						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
 						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
