@@ -43,8 +43,8 @@
 					<div id='map' class='fr w-50 relative'>
 						<div v-if='mapGenerated' class='f3 b mid-gray poppins tr mt2'>Users in <span class='f2'>{{list.filter((o)=>o.properties.users > 0).length}}</span>/{{list.length}} constituencies</div>
 						<div class='relative gray'>
-							<div class='relative' id='constituencies'><svg></svg></div>
-							<div class='tr absolute top-2 right-0'>
+							<div class='relative z-999' id='constituencies'><svg></svg></div>
+							<div class='tr absolute top-2 right-0 z-1'>
 								<div class='f7'>
 									<div class='b'>Colour scheme</div>
 									<label class='pointer'>
