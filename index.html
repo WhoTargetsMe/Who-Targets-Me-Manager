@@ -128,9 +128,11 @@
 				<h3 class='poppins tc mb0'>Constituency party coverage</h3>
 				<div class='f6 i gray tc mb3'>Click a header to order by that column</div>
 
-				<table class='tc center f6' v-if='geometries.length > 0'>
+				<table class='tc center f6 w-100' v-if='geometries.length > 0'>
 					<tr>
-						<td colspan="2"></td>
+						<td>↓</td>
+						<td>↑</td>
+						<td></td>
 						<td class='pointer b' @click='orderTable("users")'>User count</td>
 						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
 						<td class='pointer b' @click='orderTable("electorate")'>Electorate</td>
@@ -143,6 +145,7 @@
 					</tr>
 					<tr v-for='(hex,index) in geometries'>
 						<td class='tl code f7'>{{index+1}}</td>
+						<td class='tl code f7'>{{651-index}}</td>
 						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
 						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
