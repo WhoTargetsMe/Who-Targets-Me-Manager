@@ -145,7 +145,7 @@
 					</tr>
 					<tr v-for='(hex,index) in geometries'>
 						<td class='tl code f7'>{{index+1}}</td>
-						<td class='tl code f7'>{{651-index}}</td>
+						<td class='tl code f7'>{{650-index}}</td>
 						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
 						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
