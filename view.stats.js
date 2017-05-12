@@ -166,9 +166,9 @@ $(document).ready(function() {
 					} else {
 						// App.mapGenerated = true;
 
-						d3.json("hexagons-topo.json", function(error, hexmap) {
-							d3.json("regions-topo.json", function(error, regionsmap) {
-								d3.csv("constituencyVotes.csv", function(error, ge2015) {
+						d3.json("datasets/hexagons-topo.json", function(error, hexmap) {
+							d3.json("datasets/regions-topo.json", function(error, regionsmap) {
+								d3.csv("datasets/constituencyVotes.csv", function(error, ge2015) {
 									d3.json("datasets/parties.json", function(error, parties) {
 										console.log("(Re)rendering map")
 										App.parties = parties;
@@ -207,12 +207,16 @@ $(document).ready(function() {
 												Object.assign(thisParty,parties[1].list.find((p)=> {
 													var pID = p.id.toLowerCase();
 													var pName = p.name.toLowerCase();
+													var pShortName = p.short_name.toLowerCase();
 													var thisID = this2015[oneTwo.toLowerCase()].toLowerCase();
 													var x = (
-														thisID.includes(pID) ||
-														thisID.includes(pName) ||
-														pID.includes(thisID) ||
-														pName.includes(thisID)
+														// thisID.includes(pID) ||
+														// thisID.includes(pName) ||
+														// pID.includes(thisID) ||
+														// pName.includes(thisID)
+														pID == thisID ||
+														pName == thisID ||
+														pShortName == thisID
 													);
 													return x;
 												}));
