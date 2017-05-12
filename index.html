@@ -116,7 +116,7 @@
 						<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
 						<td><b>{{party.volunteers|d}}</b> volunteers</td>
 						<td><b>{{party.coverage|%(4)}}</b></td>
-						<td>of <b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "controlled" : "contested"}} pax</td>
+						<td class='tr'>of <b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "controlled" : "contested"}} pax</td>
 					</tr>
 				</table>
 			</div>
