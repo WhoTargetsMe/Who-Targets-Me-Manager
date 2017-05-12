@@ -111,12 +111,12 @@
 			<div class='center w-50 fl' v-for='(rank,rankName) in coverageByParty'>
 				<div class='f5 b tc poppins'>Coverage by constituency's {{rankName=='first_party' ? "first" : "second"}} party</div>
 				<br>
-				<table v-if='coverageByParty'>
+				<table v-if='coverageByParty' class='w-100'>
 					<tr v-for='party in rank'>
-						<td class='tr'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
-						<td><b>{{party.volunteers|d}}</b> volunteers</td>
+						<td class='tr'><b>{{party.volunteers|d}}</b> volunteers /</td>
 						<td><b>{{party.coverage|%(4)}}</b></td>
-						<td class='tr'>of <b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "controlled" : "contested"}} pax</td>
+						<td class='tr'>of <b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "represented" : "contested"}} by</td>
+						<td class='tl'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
 					</tr>
 				</table>
 			</div>
