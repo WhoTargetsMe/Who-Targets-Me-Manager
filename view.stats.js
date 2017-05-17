@@ -45,6 +45,8 @@ $(document).ready(function() {
 				userCount: 0,
 				avgAge: 0,
 				brexitCoverage: 0,
+				electorate: 0,
+				medianUsers: 0,
 				threshold: 10,
 				maxdownloads: 60,
 				maxcoverage: 0.0001,
@@ -190,6 +192,7 @@ $(document).ready(function() {
 
 											// Electorate 2015
 											hexmap.objects.hexagons.geometries[index].properties.electorate = parseInt(this2015.electorate || 0);
+											App.electorate += hexmap.objects.hexagons.geometries[index].properties.electorate;
 
 											// Users
 											thisUserRow = match(hex);
@@ -229,7 +232,9 @@ $(document).ready(function() {
 												hexmap.objects.hexagons.geometries[index].properties[oneTwo] = thisParty;
 											})
 										});
-										App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy[App.orderBy])));
+										App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy['users'])));
+										App.medianUsers = App.geometries[325].properties.users;
+										App.geometries = App.geometries.sort(orderBy[App.orderBy]);
 
 										p12.forEach(function(oneTwo) {
 											// National volunteer coverage calculations

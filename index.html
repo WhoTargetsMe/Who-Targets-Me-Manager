@@ -33,18 +33,20 @@
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
 					<div class='fl w-50'>
-						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users</div>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users <span class='gray f4'>{{userCount / electorate|%(4)}} national coverage</span></div>
 						<div class='f4 mt0 gray'>
 							<span v-for='(d,gender) in demographics.gender'>{{d.count|d}} <span class='f6'>({{d.count/(userCount)|%}})</span> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
-						<div class='f4 mt0 gray'>{{avgAge|d(0)}} average age</div>
+						<div class='f4 mt0 gray'>{{avgAge|d(0)}} average age <span class='f6'>vs 40 national average</span></div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
-					<div id='map' class='fr w-50 relative'>
-						<div v-if='mapGenerated' class='f3 b mid-gray poppins tr mt2'>Users in <span class='f2'>{{geometries.filter((o)=>o.properties.users > 0).length}}</span>/{{geometries.length}} constituencies</div>
+					<div id='map' class='fr w-50 relative tr'>
+						<div v-if='mapGenerated' class='f3 b mid-gray poppins mt2'>Users in <span class='f2'>{{geometries.filter((o)=>o.properties.users > 0).length}}</span>/{{geometries.length}} constituencies</div>
+						<div class='f4 mt0 gray'>Mean avg users per constituency <b>{{userCount/650|d(1)}}</b></div>
+						<div class='f4 mt0 gray'>Median per constituency <b>{{medianUsers}}</b></div>
 						<div class='relative gray'>
 							<div id='constituencies'><svg class='relative z-2'></svg></div>
-							<div class='tr absolute top-2 right-0'>
+							<div class='absolute top-1 right-0'>
 								<div class='f7 relative z-3'>
 									<div class='b'>Colour scheme</div>
 									<label class='pointer'>
@@ -86,13 +88,13 @@
 									<div class='fr w-80 mt2'>
 										<div class='f7 fl w-50 tl gray b f7 pt1 dib v-mid'>2016 EU REF</div>
 										<div class='f5 fr w-50'>
-											<span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'>{{selectedConstituency.brexit > 0.5 ? "Brexit" : "Remain"}}</span> <b>{{selectedConstituency.brexit|%}}</b>
+											<span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray' class='bg-gray' :class='{leave: selectedConstituency.brexit > 0.5, remain: selectedConstituency.brexit < 0.5}'>{{selectedConstituency.brexit > 0.5 ? "Brexit" : "Remain"}}</span> <b>{{selectedConstituency.brexit|%}}</b>
 										</div>
 									</div>
 									<div class='cf'></div>
 								</div>
 							</div>
-							<span class='tr absolute bottom-0 right-0 f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
+							<span class='absolute bottom-0 right-0 f7 gray'>Map courtesy of <a class='pointer gray' href='https://github.com/guardian/interactive-uk-cartogram-2015'><i>The Guardian</i> on Github</a></span>
 						</div>
 					</div>
 				</div>
