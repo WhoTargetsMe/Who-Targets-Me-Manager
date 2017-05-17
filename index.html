@@ -32,16 +32,16 @@
 		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
-					<div class='fl w-50'>
-						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users <span class='gray f4'>{{userCount / electorate|%(4)}} national coverage</span></div>
+					<div class='fl-l w-50-l'>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users <span class='gray f4'>{{userCount / electorate|%(4)}} of electorate</span></div>
 						<div class='f4 mt0 gray'>
 							<span v-for='(d,gender) in demographics.gender'><b>{{d.count/(userCount)|%}}</b> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
 						<div class='f4 mt0 gray'><b>{{avgAge|d(0)}}</b> average age <span class='f6'>vs 40 national average</span></div>
 						<div class='z-0 relative' id='age'></div>
 					</div>
-					<div id='map' class='fr w-50 relative tr'>
-						<div v-if='mapGenerated' class='f3 b mid-gray poppins mt2'>Users in <span class='f2'>{{geometries.filter((o)=>o.properties.users > 0).length}}</span>/{{geometries.length}} constituencies</div>
+					<div id='map' class='fr-l w-50-l relative tr-l'>
+						<div v-if='mapGenerated' class='f3 b mid-gray poppins mt1'>Users in <span class='f2'>{{geometries.filter((o)=>o.properties.users > 0).length}}</span>/{{geometries.length}} constituencies</div>
 						<div class='f4 mt0 gray'>Mean avg users per constituency <b>{{userCount/650|d(1)}}</b></div>
 						<div class='f4 mt0 gray'>Median per constituency <b>{{medianUsers}}</b></div>
 						<div class='relative gray'>
@@ -110,12 +110,12 @@
 
 			<br><hr><br>
 
-			<div class='center w-50 fl' v-for='(rank,rankName) in coverageByParty'>
+			<div class='center w-50-l fl-l f7 f6-l' v-for='(rank,rankName) in coverageByParty'>
 				<div class='f5 b tc poppins'>Coverage by constituency's {{rankName=='first_party' ? "first" : "second"}} party</div>
 				<br>
-				<table v-if='coverageByParty' class='w-100'>
+				<table v-if='coverageByParty' class='w-100-l center mb3 mb0-l'>
 					<tr v-for='party in rank'>
-						<td class='tr'><b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "constiuents of" : "contested by"}}</td>
+						<td class='tr'><b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "constituents of" : "contested by"}}</td>
 						<td class='tl'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
 						<td class='tr'><b>{{party.volunteers|d}}</b> volunteers /</td>
 						<td><b>{{party.coverage|%(4)}}</b></td>
@@ -130,14 +130,14 @@
 				<h3 class='poppins tc mb0'>Constituency party coverage</h3>
 				<div class='f6 i gray tc mb3'>Click a header to order by that column</div>
 
-				<table class='tc center f6 w-100' v-if='geometries.length > 0'>
+				<table class='tc center f7 f6-l w-100' v-if='geometries.length > 0'>
 					<tr>
-						<td>↓</td>
-						<td>↑</td>
+						<td class='dn dtc-l'>↓</td>
+						<td class='dn dtc-l'>↑</td>
 						<td></td>
 						<td class='pointer b' @click='orderTable("users")'>User count</td>
 						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
-						<td class='pointer b' @click='orderTable("electorate")'>Electorate</td>
+						<td class='dn dtc-l pointer b' @click='orderTable("electorate")'>Electorate</td>
 						<td><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
 						<td><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
 						<td class='pointer b' @click='orderTable("brexit")'>% leave vote</td>
@@ -146,13 +146,13 @@
 						<td colspan=7>&nbsp;</td>
 					</tr>
 					<tr v-for='(hex,index) in geometries'>
-						<td class='tl code f7'>{{index+1}}</td>
-						<td class='tl code f7'>{{650-index}}</td>
+						<td class='dn dtc-l tl code f7'>{{index+1}}</td>
+						<td class='dn dtc-l tl code f7'>{{650-index}}</td>
 						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
 						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
-						<td class='tl'>of {{hex.properties.electorate|d}} electorate</td>
-						<td class='tl'>2015: <b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
+						<td class='dn dtc-l tl'>of {{hex.properties.electorate|d}} electorate</td>
+						<td class='tl'><span class='dn dib-l'>2015: </span><b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.brexit|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'>{{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</span></td>
 					</tr>

@@ -97,7 +97,7 @@ $(document).ready(function() {
 					vega.embed("#age", {
 						"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
 						"width": $("#age").width(),
-						"height": 700,
+						"height": 739,
 						"data": {
 							"values": App.demographics.age
 						},
