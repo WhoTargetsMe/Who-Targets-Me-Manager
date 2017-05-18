@@ -237,18 +237,18 @@ $(document).ready(function() {
 										App.geometries = App.geometries.sort(orderBy[App.orderBy]);
 
 										p12.forEach(function(oneTwo) {
-											// National volunteer coverage calculations
+											// National user coverage calculations
 											var oneTwoPartyList = hexmap.objects.hexagons.geometries.reduce(function(result, constituency) {
 												if (result[constituency.properties[oneTwo].id]) {
 													// console.log("Adding to"+constituency.properties[oneTwo].id)
-													result[constituency.properties[oneTwo].id].volunteers += parseInt(constituency.properties.users);
+													result[constituency.properties[oneTwo].id].users += parseInt(constituency.properties.users);
 													result[constituency.properties[oneTwo].id].electorate += parseInt(constituency.properties.electorate);
-													result[constituency.properties[oneTwo].id].coverage = result[constituency.properties[oneTwo].id].volunteers / result[constituency.properties[oneTwo].id].electorate;
+													result[constituency.properties[oneTwo].id].coverage = result[constituency.properties[oneTwo].id].users / result[constituency.properties[oneTwo].id].electorate;
 												} else {
 													// console.log("Making ",constituency.properties[oneTwo].id)
 													result[constituency.properties[oneTwo].id] = {
 														id: constituency.properties[oneTwo].id,
-														volunteers: parseInt(constituency.properties.users),
+														users: parseInt(constituency.properties.users),
 														electorate: parseInt(constituency.properties.electorate),
 														coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.electorate)
 													}
@@ -284,7 +284,7 @@ $(document).ready(function() {
 											.append('title')
 											.text(function(constituency) {
 												var thisConstituency = match(constituency);
-												return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" volunteers";
+												return constituency.properties.name + ": " + (typeof thisConstituency != 'string' ? thisConstituency.users : 0) +" users";
 											})
 
 										var regions = topojson.feature(regionsmap, regionsmap.objects.regions);

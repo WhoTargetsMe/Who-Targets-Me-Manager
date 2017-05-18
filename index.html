@@ -20,20 +20,19 @@
 	}
 	</style>
 </head>
-<body class='pv5'>
+<body class='pb5'>
+	<header style='max-width: 1140px;' class='center ph3 mt4 mb4 tc'>
+		<div class='b f2 poppins lh-title'><span class='f4 tracked-tight'>Who Targets Me?</span><br>Dashboard</div>
+	</header>
 	<div id='loading' class='measure center tc' style="width: 400px">
-		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>One sec</div>
+		<div class='pv6 dotdotdot f3 lh-title poppins b mb3 tc'>Loading</div>
 	</div>
 	<main id='app' style='display: none;'>
-		<header style='max-width: 1140px;' class='center ph3 pv4'>
-			<a class='b f3 poppins dib fr mt2' href='categoriser.html'>Advertiser categoriser</a>
-			<div class='b f2 poppins'>Extension coverage</div>
-		</header>
 		<section style='max-width: 1180px; min-height: 400px;' class='center bg-light-gray'>
 			<div style='max-width: 1140px;' class='center ph3 pv4 '>
 				<div class='w-100'>
 					<div class='fl-l w-50-l'>
-						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users <span class='gray f4'>{{userCount / electorate|%(4)}} of electorate</span></div>
+						<div class='f2 b mt1 mb0 center mid-gray poppins' v-if='demographics.gender'>{{userCount|d}} users <span class='db dib-l gray f4'>{{userCount / electorate|%(4)}} of electorate</span></div>
 						<div class='f4 mt0 gray'>
 							<span v-for='(d,gender) in demographics.gender'><b>{{d.count/(userCount)|%}}</b> {{gender == 0 ? "other" : gender == 1 ? "male" : "female"}}s&nbsp;&nbsp;&nbsp;</span>
 						</div>
@@ -74,7 +73,7 @@
 								<div v-if='mapGenerated && selectedConstituency' class='mid-gray relative z-1'>
 									<hr>
 									<div class='f5 b'>{{typeof selectedConstituency === 'string' ? selectedConstituency : selectedConstituency.name}}</div>
-									<div class='f5'><b>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users|d}}</b> volunteers</div>
+									<div class='f5'><b>{{typeof selectedConstituency === 'string' ? 0 : selectedConstituency.users|d}}</b> users</div>
 									<div class='f5'>{{selectedConstituency.electorate|d}} electorate, <b>{{selectedConstituency.coverage|%(4)}}</b> coverage</div>
 									<br>
 									<div class='fr w-80 mt2'>
@@ -117,7 +116,7 @@
 					<tr v-for='party in rank'>
 						<td class='tr'><b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "constituents of" : "contested by"}}</td>
 						<td class='tl'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
-						<td class='tr'><b>{{party.volunteers|d}}</b> volunteers /</td>
+						<td class='tr'><b>{{party.users|d}}</b> users /</td>
 						<td><b>{{party.coverage|%(4)}}</b></td>
 					</tr>
 				</table>
@@ -128,18 +127,18 @@
 
 			<div class='center'>
 				<h3 class='poppins tc mb0'>Constituency party coverage</h3>
-				<div class='f6 i gray tc mb3'>Click a header to order by that column</div>
+				<div class='f6 i gray tc mt1 mb3'>Click a header to order by column</div>
 
 				<table class='tc center f7 f6-l w-100' v-if='geometries.length > 0'>
 					<tr>
 						<td class='dn dtc-l'>↓</td>
 						<td class='dn dtc-l'>↑</td>
 						<td></td>
-						<td class='pointer b' @click='orderTable("users")'>User count</td>
+						<td class='pointer b' @click='orderTable("users")'>Users</td>
 						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
 						<td class='dn dtc-l pointer b' @click='orderTable("electorate")'>Electorate</td>
-						<td><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
-						<td><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
+						<td>2015<br><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
+						<td>2015<br><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
 						<td class='pointer b' @click='orderTable("brexit")'>% leave vote</td>
 					</tr>
 					<tr>
@@ -149,10 +148,10 @@
 						<td class='dn dtc-l tl code f7'>{{index+1}}</td>
 						<td class='dn dtc-l tl code f7'>{{650-index}}</td>
 						<td class='tr b' :class="{'red':hex.users == 0 }">{{hex.properties.name}}</td>
-						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> volunteers &nbsp;-</td>
+						<td><span class='b f5' :class="{'red':hex.properties.users == 0 }">{{hex.properties.users|d}}</span> users</td>
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
-						<td class='dn dtc-l tl'>of {{hex.properties.electorate|d}} electorate</td>
-						<td class='tl'><span class='dn dib-l'>2015: </span><b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
+						<td class='dn dtc-l tl'>{{hex.properties.electorate|d}} electors</td>
+						<td class='tl'><span class='dn dib-l'></span><b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.brexit|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'>{{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</span></td>
 					</tr>
