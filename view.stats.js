@@ -3,6 +3,7 @@ Vue.config.devtools = true
 var orderBy = {
 	users: (a,b) => a.properties.users - b.properties.users,
 	coverage: (a,b) => a.properties.coverage - b.properties.coverage,
+	sharediff: (a,b) => a.properties.sharediff - b.properties.sharediff,
 	electorate: (a,b) =>  a.properties.electorate - b.properties.electorate,
 	first_party_share: (a,b) =>  a.properties.first_party.share - b.properties.first_party.share,
 	second_party_share: (b,a) =>  a.properties.second_party.share - b.properties.second_party.share,
@@ -213,10 +214,6 @@ $(document).ready(function() {
 													var pShortName = p.short_name.toLowerCase();
 													var thisID = this2015[oneTwo.toLowerCase()].toLowerCase();
 													var x = (
-														// thisID.includes(pID) ||
-														// thisID.includes(pName) ||
-														// pID.includes(thisID) ||
-														// pName.includes(thisID)
 														pID == thisID ||
 														pName == thisID ||
 														pShortName == thisID
@@ -231,6 +228,9 @@ $(document).ready(function() {
 												// Merge into hex object
 												hexmap.objects.hexagons.geometries[index].properties[oneTwo] = thisParty;
 											})
+
+											// First-second difference
+											hexmap.objects.hexagons.geometries[index].properties.sharediff = hexmap.objects.hexagons.geometries[index].properties[p12[0]].share - hexmap.objects.hexagons.geometries[index].properties[p12[1]].share
 										});
 										App.geometries = JSON.parse(JSON.stringify(hexmap.objects.hexagons.geometries.sort(orderBy['users'])));
 										App.medianUsers = App.geometries[325].properties.users;
@@ -242,6 +242,7 @@ $(document).ready(function() {
 												if (result[constituency.properties[oneTwo].id]) {
 													// console.log("Adding to"+constituency.properties[oneTwo].id)
 													result[constituency.properties[oneTwo].id].users += parseInt(constituency.properties.users);
+													result[constituency.properties[oneTwo].id].constituencies++;
 													result[constituency.properties[oneTwo].id].electorate += parseInt(constituency.properties.electorate);
 													result[constituency.properties[oneTwo].id].coverage = result[constituency.properties[oneTwo].id].users / result[constituency.properties[oneTwo].id].electorate;
 												} else {
@@ -250,7 +251,8 @@ $(document).ready(function() {
 														id: constituency.properties[oneTwo].id,
 														users: parseInt(constituency.properties.users),
 														electorate: parseInt(constituency.properties.electorate),
-														coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.electorate)
+														coverage: parseInt(constituency.properties.users) / parseInt(constituency.properties.electorate),
+														constituencies: 1
 													}
 													Object.assign(result[constituency.properties[oneTwo].id],constituency.properties[oneTwo]);
 												}

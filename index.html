@@ -114,10 +114,11 @@
 				<br>
 				<table v-if='coverageByParty' class='w-100-l center mb3 mb0-l'>
 					<tr v-for='party in rank'>
-						<td class='tr'><b>{{party.electorate|d}}</b> {{rankName=='first_party' ? "constituents of" : "contested by"}}</td>
+						<td class='tr'><b>{{party.constituencies}}</b> seats {{rankName=='first_party' ? "for" : "contested by"}}</td>
 						<td class='tl'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
 						<td class='tr'><b>{{party.users|d}}</b> users /</td>
 						<td><b>{{party.coverage|%(4)}}</b></td>
+						<td class='tl'>of <b>{{party.electorate|d}}</b> electors</td>
 					</tr>
 				</table>
 			</div>
@@ -138,6 +139,7 @@
 						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
 						<td class='dn dtc-l pointer b' @click='orderTable("electorate")'>Electorate</td>
 						<td>2015<br><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
+						<td>2015<br><span class='pointer b' @click='orderTable("sharediff")'>% point<br>victory<br>margin</span></td>
 						<td>2015<br><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
 						<td class='pointer b' @click='orderTable("brexit")'>% leave vote</td>
 					</tr>
@@ -152,6 +154,7 @@
 						<td :class="{'red':hex.properties.users == 0 }" class='b'>{{hex.properties.coverage|%(4)}}</td>
 						<td class='dn dtc-l tl'>{{hex.properties.electorate|d}} electors</td>
 						<td class='tl'><span class='dn dib-l'></span><b>{{hex.properties.first_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.first_party.id'>{{hex.properties.first_party.short_name}}</span></td>
+						<td class='tl'><span class='dn dib-l'></span><b>{{hex.properties.sharediff|%(2)}}</b></td>
 						<td class='tl'><b>{{hex.properties.second_party.share|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray' :class='"party-"+hex.properties.second_party.id'>{{hex.properties.second_party.short_name}}</span></td>
 						<td class='tl'><b>{{hex.properties.brexit|%}}</b> <span class='f7 b lh-copy ph1 dib v-mid br2 bg-gray tr' class='bg-gray' :class='{leave: hex.properties.brexit > 0.5, remain: hex.properties.brexit < 0.5}'>{{hex.properties.brexit > 0.5 ? "Brexit" : "Remain"}}</span></td>
 					</tr>
