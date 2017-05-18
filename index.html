@@ -18,6 +18,9 @@
 	.remain {
 		background: yellow;
 	}
+	tr:hover td {
+		background: yellow;
+	}
 	</style>
 </head>
 <body class='pb5'>
@@ -112,7 +115,7 @@
 			<div class='center w-50-l fl-l f7 f6-l' v-for='(rank,rankName) in coverageByParty'>
 				<div class='f5 b tc poppins'>Coverage by constituency's {{rankName=='first_party' ? "first" : "second"}} party</div>
 				<br>
-				<table v-if='coverageByParty' class='w-100-l center mb3 mb0-l'>
+				<table v-if='coverageByParty' class='collapse w-100-l center mb3 mb0-l'>
 					<tr v-for='party in rank'>
 						<td class='tr'><b>{{party.constituencies}}</b> seats {{rankName=='first_party' ? "for" : "contested by"}}</td>
 						<td class='tl'><span :class='"party-"+party.id' class='f7 b lh-copy ph1 dib v-mid br2 white bg-gray'>{{party.short_name}}</span></td>
@@ -130,21 +133,21 @@
 				<h3 class='poppins tc mb0'>Constituency party coverage</h3>
 				<div class='f6 i gray tc mt1 mb3'>Click a header to order by column</div>
 
-				<table class='tc center f7 f6-l w-100' v-if='geometries.length > 0'>
+				<table class='collapse tc center f7 f6-l w-100' v-if='geometries.length > 0'>
 					<tr>
-						<td class='dn dtc-l'>↓</td>
-						<td class='dn dtc-l'>↑</td>
-						<td></td>
-						<td class='pointer b' @click='orderTable("users")'>Users</td>
-						<td class='pointer b' @click='orderTable("coverage")'>% coverage</td>
-						<td class='dn dtc-l pointer b' @click='orderTable("electorate")'>Electorate</td>
-						<td>2015<br><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></td>
-						<td>2015<br><span class='pointer b' @click='orderTable("sharediff")'>% point<br>victory<br>margin</span></td>
-						<td>2015<br><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></td>
-						<td class='pointer b' @click='orderTable("brexit")'>% leave vote</td>
+						<th class='dn dtc-l'>↓</th>
+						<th class='dn dtc-l'>↑</th>
+						<th></th>
+						<th class='pointer b' @click='orderTable("users")'>Users</th>
+						<th class='pointer b' @click='orderTable("coverage")'>% coverage</th>
+						<th class='dn dtc-l pointer b' @click='orderTable("electorate")'>Electorate</th>
+						<th class='normal'>2015<br><span class='pointer b' @click='orderTable("first_party_share")'>% victor</span><br>OR<br><span class='pointer b' @click='orderTable("first_party")'>Alphabetical</span></th>
+						<th class='normal'>2015<br><span class='pointer b' @click='orderTable("sharediff")'>% point<br>victory<br>margin</span></th>
+						<th class='normal'>2015<br><span class='pointer b' @click='orderTable("second_party_share")'>% runner-up</span><br>OR<br><span class='pointer b' @click='orderTable("second_party")'>Alphabetical</span></th>
+						<th class='pointer b' @click='orderTable("brexit")'>% leave vote</th>
 					</tr>
 					<tr>
-						<td colspan=7>&nbsp;</td>
+						<th colspan=10>&nbsp;</th>
 					</tr>
 					<tr v-for='(hex,index) in geometries'>
 						<td class='dn dtc-l tl code f7'>{{index+1}}</td>
